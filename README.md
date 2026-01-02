@@ -1,36 +1,229 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<p align="center">
+  <a href="https://chemistrycheck.vercel.app" rel="noopener">
+ <img width=750px height=394px src="https://chemistrycheck.vercel.app/og-image.png" alt="ChemistryCheck - Chat Analysis & Insights"></a>
+</p>
 
-## Getting Started
+<h2 align="center">ChemistryCheck - AI-Powered Chat Analysis & Relationship Insights</h2>
 
-First, run the development server:
+<p align="center">
+  Decode your chats. Understand your relationships. Get brutally honest insights about what's really happening between the lines. Upload WhatsApp, Telegram, or Instagram chat exports and let AI analyze communication patterns, spot red flags, and reveal relationship dynamics.
+</p>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 📝 Table of Contents
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- [About](#about)
+- [Getting Started](#getting_started)
+- [Usage](#usage)
+- [Built Using](#built_using)
+- [Deployment](#deployment)
+- [Authors](#authors)
+- [Acknowledgments](#acknowledgement)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🧐 About <a name = "about"></a>
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+ChemistryCheck is an AI-powered chat analysis tool that helps you understand what's really happening in your conversations. Upload your chat history from WhatsApp, Telegram, or Instagram, and get comprehensive insights into communication patterns, relationship dynamics, and potential red flags.
 
-## Learn More
+The main idea is straightforward: analyze chat exports to reveal patterns that might not be obvious at first glance. Who's more invested? Are there warning signs? Is this genuine connection or something else? The AI analyzes message frequency, response times, word usage, emoji patterns, and more to give you honest, data-driven insights.
 
-To learn more about Next.js, take a look at the following resources:
+**I built it** to help people see beyond the surface of their conversations. It uses modern web tools and AI to process chat data, generate statistics, and provide actionable insights through an intuitive dashboard. The analysis includes everything from basic stats (message counts, word frequency) to advanced AI-powered relationship health scores and personality insights.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🏁 Getting Started <a name = "getting_started"></a>
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Want to run ChemistryCheck locally? Here's what you need to do.
 
-## Deploy on Vercel
+### What You Need First
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Node.js version 18 or newer
+- A PostgreSQL database (I use Neon, but any PostgreSQL database works)
+- A Google Gemini API key for AI insights
+- Google OAuth credentials (optional, for social login)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Getting It Running
+
+1. **Grab the code**
+
+   ```bash
+   git clone https://github.com/your-username/chemistrycheck.git
+   cd chemistrycheck
+   ```
+
+2. **Install everything**
+
+   ```bash
+   npm install
+   # or
+   pnpm install
+   ```
+
+3. **Set up your environment**
+
+   Create a `.env` file in the root directory with the following variables:
+
+   ```env
+   # Database
+   DATABASE_URL=your_postgresql_connection_string
+
+   # Application
+   APP_URL=http://localhost:3000
+
+   # AI (Google Gemini)
+   GEMINI_API_KEY=your_gemini_api_key
+
+   # Authentication (Google OAuth)
+   GOOGLE_CLIENT_ID=your_google_client_id
+   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   ```
+
+4. **Set up the database**
+
+   Run the database migrations:
+
+   ```bash
+   npx drizzle-kit push
+   ```
+
+5. **Start the development server**
+
+   ```bash
+   npm run dev
+   # or
+   pnpm dev
+   ```
+
+The application should be running at `http://localhost:3000`.
+
+## 🎈 Usage <a name = "usage"></a>
+
+### What It Does
+
+1. **Upload Chat Exports**
+   - Support for WhatsApp (.txt), Telegram (.json), and Instagram (.json) chat exports
+   - Secure file upload using Vercel Blob storage
+   - Automatic platform detection and parsing
+
+2. **AI-Powered Analysis**
+   - Analyzes message patterns, response times, word frequency, and emoji usage
+   - Generates relationship health scores and interest percentages
+   - Identifies communication patterns and potential red flags
+   - Provides personality insights and attachment style analysis
+
+3. **Comprehensive Dashboard**
+   - View all your analyses in one place
+   - Detailed statistics and visualizations
+   - Activity patterns (messages by hour, day, month)
+   - Response time analysis
+   - Media statistics
+   - Emoji analysis
+   - AI-generated insights and summaries
+
+4. **Shareable Analysis**
+   - Make analyses public and shareable
+   - View detailed breakdowns of communication patterns
+
+### The Analysis Flow
+
+1. Sign up or sign in to your account
+2. Navigate to "New Analysis" and select your platform (WhatsApp, Telegram, or Instagram)
+3. Upload your chat export file
+4. Wait for the AI to process and analyze your chat
+5. View comprehensive insights in the analysis dashboard
+6. Access your analysis history from the main dashboard
+
+The analysis includes everything from basic message counts to advanced AI insights about relationship dynamics, helping you understand what's really happening in your conversations.
+
+## ⛏️ Built Using <a name = "built_using"></a>
+
+### Core Framework
+
+- **Next.js 15.2.3** with App Router for the main framework
+- **React 19** for the user interface
+- **TypeScript** for type safety
+- **Node.js** to run everything
+
+### Database & ORM
+
+- **Drizzle ORM** for database management
+- **Neon PostgreSQL** (or any PostgreSQL database) for data storage
+- **Better Auth** for authentication and session management
+
+### AI & Processing
+
+- **Google Gemini AI** (gemini-2.0-flash-lite) for generating relationship insights and analysis
+- Custom chat parsers for WhatsApp, Telegram, and Instagram exports
+
+### UI and Design
+
+- **Tailwind CSS** for styling
+- **Radix UI** for accessible components (dialogs, dropdowns, tabs, etc.)
+- **Lucide React** for icons
+- **Next Themes** for dark/light mode support
+- **Recharts** for data visualization
+- **React D3 Cloud** for word cloud visualizations
+
+### Storage & Deployment
+
+- **Vercel Blob** for secure file storage
+- **Vercel** for hosting and deployment
+- **Vercel Analytics** for tracking usage
+
+### Development Tools
+
+- **ESLint** for code quality
+- **Drizzle Kit** for database migrations
+- **pnpm/npm** for package management
+
+## 🚀 Deployment <a name = "deployment"></a>
+
+This application is set up to deploy on Vercel.
+
+### Getting It Live
+
+1. **Vercel Setup**
+   - Connect your GitHub repository to Vercel
+   - Set up the environment variables in the Vercel dashboard
+   - Deploy automatically when you push to main
+
+2. **Environment Variables You Need**
+   ```env
+   DATABASE_URL=your_postgresql_connection_string
+   APP_URL=https://your-domain.vercel.app
+   GEMINI_API_KEY=your_gemini_api_key
+   GOOGLE_CLIENT_ID=your_google_client_id
+   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   ```
+
+3. **Database Setup**
+   - Set up a PostgreSQL database (Neon, Supabase, or any PostgreSQL provider)
+   - Run migrations: `npx drizzle-kit push`
+   - Ensure the `DATABASE_URL` is correctly configured
+
+4. **Custom Domain**
+   - Set up your custom domain in Vercel if desired
+   - Update `APP_URL` to match your domain
+
+The application will be live and ready to analyze chat conversations!
+
+## ✍️ Author <a name = "authors"></a>
+
+**ArjunCodess** - The sole developer and creator of ChemistryCheck
+
+Built with the goal of helping people understand their relationships better through data-driven insights.
+
+## 🎉 Acknowledgments <a name = "acknowledgement"></a>
+
+- **Vercel** for making deployment smooth and hosting the application
+- **shadcn/ui** for providing excellent UI components to build upon
+- **Google Gemini** for powering the AI insights
+- **Drizzle ORM** for making database management straightforward
+- **Better Auth** for handling authentication seamlessly
+- **The open source community** for all the amazing tools and libraries that made this possible
+
+---
+
+<div align="center">
+
+**ChemistryCheck** - Decode your chats. Understand your relationships.
+
+_Built with ❤️ for those seeking honest insights_
+
+</div>
