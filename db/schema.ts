@@ -1,4 +1,14 @@
-import { pgTable, text, timestamp, boolean, integer, json, uuid } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  timestamp,
+  boolean,
+  integer,
+  json,
+  uuid,
+  index,
+  vector,
+} from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -65,4 +75,36 @@ export const chatAnalysis = pgTable("chat_analysis", {
   isPublic: boolean("is_public").default(false).notNull(),
 });
 
-export const schema = { user, session, account, verification, chatAnalysis };
+export const messageEmbeddings = pgTable(
+  "message_embeddings",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    analysisId: uuid("analysis_id")
+      .notNull()
+      .references(() => chatAnalysis.id, { onDelete: "cascade" }),
+    chunkContent: text("chunk_content").notNull(),
+    sender: text("sender").notNull(),
+    chunkIndex: integer("chunk_index").notNull(),
+    startTimestamp: timestamp("start_timestamp"),
+    endTimestamp: timestamp("end_timestamp"),
+    messageCount: integer("message_count").notNull(),
+    embedding: vector("embedding", { dimensions: 768 }).notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+  },
+  (table) => [
+    index("embedding_idx").using(
+      "hnsw",
+      table.embedding.op("vector_cosine_ops"),
+    ),
+    index("analysis_id_idx").on(table.analysisId),
+  ],
+);
+
+export const schema = {
+  user,
+  session,
+  account,
+  verification,
+  chatAnalysis,
+  messageEmbeddings,
+};
