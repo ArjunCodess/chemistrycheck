@@ -224,7 +224,7 @@ export default function AnalysisDashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen w-full">
         <div className="text-xl">Loading analytics...</div>
       </div>
     );
@@ -532,7 +532,7 @@ export default function AnalysisDashboard() {
               <Menu className="h-4 w-4" />
             </Button>
           </DrawerTrigger>
-          <DrawerContent className="h-[35rem] px-4">
+          <DrawerContent className="h-140 px-4">
             <DrawerTitle />
             <div className="grid grid-cols-1 gap-4 pt-8">
               <Button
