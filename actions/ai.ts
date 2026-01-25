@@ -38,6 +38,8 @@ export async function generateAIInsights(stats: ChatStats, sampleMessages: Array
     };
     
     const prompt = `
+      Write like a real human. Be professional, but natural, like you're explaining something to a smart friend over coffee. Avoid buzzwords, corporate jargon, and em dashes. Never sound like a press release. Be clear, direct, conversational and real.
+      
       You are an expert in analyzing chat conversations. Based on the provided chat statistics and sample messages, please generate:
       
       1. A 3-4 paragraph chat summary that describes the overall relationship dynamics, communication patterns, and whether there are any signs that one person is "cooked" (showing significantly more interest than the other).
