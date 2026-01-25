@@ -3,13 +3,13 @@ import { generateAIInsights } from '@/actions/ai';
 import { decodeInstagramEmojis } from '../format-utils';
 
 
-export async function parseChatData(data: InstagramChatData): Promise<ChatStats> {
+export async function parseChatData(data: InstagramChatData): Promise<{ stats: ChatStats; messages: { from: string; text: string; date: string }[] }> {
   console.log("Starting to parse Instagram chat data with", data.messages?.length || 0, "messages");
   
   // Check if valid data is provided
   if (!data || !data.messages || !Array.isArray(data.messages) || data.messages.length === 0) {
     console.error("Invalid Instagram chat data format", data);
-    return getDefaultStats();
+    return { stats: getDefaultStats(), messages: [] };
   }
   
   // Initialize primary stats object
@@ -357,7 +357,29 @@ export async function parseChatData(data: InstagramChatData): Promise<ChatStats>
     console.error("Error generating AI insights:", error);
   }
   
-  return stats;
+    // Prepare messages for RAG embedding
+    const normalizedMessages = data.messages
+      .filter(m => m.content && !isSystemMessage(m))
+      .map(m => ({
+        from: m.sender_name ? decodeInstagramEmojis(m.sender_name) : "Unknown",
+        text: m.content ? decodeInstagramEmojis(m.content) : "",
+        date: m.timestamp_ms ? new Date(m.timestamp_ms).toISOString() : new Date().toISOString()
+      }));
+
+    return { stats, messages: normalizedMessages };
+}
+
+function isSystemMessage(message: InstagramMessage): boolean {
+  if (!message.content) return false;
+  const content = decodeInstagramEmojis(message.content);
+  return content.includes("shared a story") || 
+         content.includes("sent an attachment") ||
+         content.includes("You shared") ||
+         content.includes("रिएक्शन") || 
+         content.includes("reaction to") || 
+         content.includes("reacted to") ||
+         content.includes("मैसेज पर") || 
+         content.includes("आपके मैसेज");
 }
 
 /**
