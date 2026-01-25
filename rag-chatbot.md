@@ -508,34 +508,34 @@ GOOGLE_GENERATIVE_AI_API_KEY=your-api-key-here
 
 ### Phase 1: Database Setup
 - [ ] Enable pgvector extension in Neon (`CREATE EXTENSION vector;`)
-- [ ] Add `messageEmbeddings` table to Drizzle schema
+- [x] ~~Add `messageEmbeddings` table to Drizzle schema~~
 - [ ] Generate and run migration
 - [ ] Test vector operations in Drizzle Studio
 
 ### Phase 2: Embedding Pipeline
-- [ ] Create `lib/rag/embedding.ts` with `generateEmbedding` function
-- [ ] Create `lib/rag/chunking.ts` with message chunking logic
-- [ ] Create `lib/rag/store.ts` with `embedAndStoreMessages` function
+- [x] ~~Create `lib/rag/embedding.ts` with `generateEmbedding` function~~
+- [x] ~~Create `lib/rag/chunking.ts` with message chunking logic~~
+- [x] ~~Create `lib/rag/store.ts` with `embedAndStoreMessages` function~~
 - [ ] Integrate into upload flow (after parsing, before saving stats)
 
 ### Phase 3: Retrieval System
-- [ ] Create `lib/rag/search.ts` with `findRelevantMessages` function
-- [ ] Create `lib/rag/context.ts` with `buildContext` function
+- [x] ~~Create `lib/rag/search.ts` with `findRelevantMessages` function~~
+- [x] ~~Create `lib/rag/context.ts` with `buildContext` function~~
 - [ ] Test retrieval with sample queries
 
 ### Phase 4: Chat API
-- [ ] Create `/api/analysis/[id]/chat` route
-- [ ] Implement streaming with AI SDK
+- [x] ~~Create `/api/analysis/[id]/chat` route~~
+- [x] ~~Implement streaming with AI SDK~~
 - [ ] Add authentication check (user must own the analysis)
 - [ ] Test with Postman/curl
 
 ### Phase 5: UI Implementation
-- [ ] Install shadcn/ui Sidebar component (`npx shadcn@latest add sidebar`)
-- [ ] Create chat sidebar using `SidebarProvider`, `Sidebar`, `SidebarContent`, etc.
-- [ ] Add toggle button to Analysis Dashboard header
-- [ ] Implement `useChat` hook from AI SDK for streaming
-- [ ] Style the chat interface (matches app design)
-- [ ] Add suggestion chips
+- [x] ~~Install shadcn/ui Sidebar component (`npx shadcn@latest add sidebar`)~~
+- [x] ~~Create chat sidebar using `SidebarProvider`, `Sidebar`, `SidebarContent`, etc.~~
+- [x] ~~Add toggle button to Analysis Dashboard header~~
+- [x] ~~Implement `useChat` hook from AI SDK for streaming~~
+- [x] ~~Style the chat interface (matches app design)~~
+- [x] ~~Add suggestion chips~~
 - [ ] Mobile responsive (sidebar collapses to sheet/drawer)
 
 ### Phase 6: Polish & Optimization

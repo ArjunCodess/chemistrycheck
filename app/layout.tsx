@@ -6,6 +6,7 @@ import Header from "@/components/shared/header";
 import { config } from "dotenv";
 import { Analytics } from "@vercel/analytics/react";
 import Script from "next/script";
+import { ChatSidebarProvider } from "@/components/providers/chat-sidebar-provider";
 
 config({ path: ".env" });
 
@@ -60,8 +61,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={geist.className}>
-        <Header />
-        {children}
+        <ChatSidebarProvider>
+          <Header />
+          {children}
+        </ChatSidebarProvider>
         <Toaster />
         <Analytics />
       </body>
