@@ -148,7 +148,7 @@ The analysis includes everything from basic message counts to advanced AI insigh
 
 ### AI & Processing
 
-- **Google Gemini AI** (gemini-2.0-flash-lite) for generating relationship insights and analysis
+- **Google Gemini AI** (gemini-3-flash-preview) for generating relationship insights and analysis
 - Custom chat parsers for WhatsApp, Telegram, and Instagram exports
 
 ### UI and Design
