@@ -17,8 +17,6 @@ export function ChatSidebarProvider({
   const { data: session, isPending } = authClient.useSession();
 
   // Check if we are on an analysis page
-  // The route is typically /analysis/[id] or /dashboard/[id]
-  // We should check if 'id' param is present and matches the URL pattern
   const analysisId = (params?.id as string) || undefined;
 
   const [chatName, setChatName] = useState<string | undefined>(undefined);
@@ -27,8 +25,7 @@ export function ChatSidebarProvider({
   // Determine if sidebar should be shown
   useEffect(() => {
     // Only show sidebar if we have a valid analysis ID and we are on an analysis route
-    // This prevents it from showing up on other pages that might accidentally match param names
-    const isAnalysisRoute = pathname?.includes('/analysis/') || pathname?.includes('/dashboard/');
+    const isAnalysisRoute = pathname?.includes('/analysis/');
 
     // Initial check based on route
     if (analysisId && isAnalysisRoute) {
