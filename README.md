@@ -131,8 +131,8 @@ The application should be running at `http://localhost:3000`.
 1. Sign up or sign in to your account
 2. Navigate to "New Analysis" and select your platform (WhatsApp, Telegram, or Instagram)
 3. Upload your chat export file
-4. Wait for the AI to process and analyze your chat
-5. View comprehensive insights in the analysis dashboard
+4. Get redirected to the analysis page instantly while processing happens in the background
+5. View comprehensive insights once the AI finishes analyzing
 6. Access your analysis history from the main dashboard
 
 The analysis includes everything from basic message counts to advanced AI insights about relationship dynamics, helping you understand what's really happening in your conversations.
@@ -158,6 +158,7 @@ The analysis includes everything from basic message counts to advanced AI insigh
 - **Google Gemini AI** (gemini-3-flash-preview) for generating relationship insights and analysis
 - **Gemini text-embedding-004** for semantic embeddings (RAG chatbot)
 - **pgvector** for vector similarity search
+- **Inngest** for background job processing (parsing & embedding)
 - Custom chat parsers for WhatsApp, Telegram, and Instagram exports
 
 ### UI and Design

@@ -32,18 +32,19 @@ interface Analysis {
   name: string;
   platform: string;
   createdAt: string;
-  totalMessages: number;
-  totalWords: number;
-  participantCount: number;
+  totalMessages: number | null;
+  totalWords: number | null;
+  participantCount: number | null;
+  jobStatus: "pending" | "processing" | "ready" | "failed";
 }
 
 export default function DashboardPage() {
   const [analyses, setAnalyses] = useState<Analysis[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
-  
+
   const { data: session, isPending } = authClient.useSession();
-  
+
   useEffect(() => {
     if (!isPending && !session) {
       redirect("/sign-in");
@@ -57,11 +58,11 @@ export default function DashboardPage() {
         const response = await fetch("/api/analyses", {
           credentials: 'include'
         });
-        
+
         if (!response.ok) {
           throw new Error("Failed to fetch analyses");
         }
-        
+
         const data = await response.json();
         setAnalyses(data);
       } catch (error) {
@@ -71,7 +72,7 @@ export default function DashboardPage() {
         setIsLoading(false);
       }
     };
-    
+
     if (session) {
       fetchAnalyses();
     }
@@ -91,13 +92,13 @@ export default function DashboardPage() {
         method: 'DELETE',
         credentials: 'include'
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to delete analysis');
       }
-      
+
       toast.success('Analysis deleted successfully');
-      
+
       // Update the analyses list by removing the deleted one
       setAnalyses(analyses.filter(analysis => analysis.id !== id));
     } catch (error) {
@@ -171,7 +172,24 @@ export default function DashboardPage() {
                     {analyses.map((analysis) => (
                       <TableRow key={analysis.id}>
                         <TableCell className="font-medium">
-                          {analysis.name || "Untitled Analysis"}
+                          <div className="flex items-center gap-2">
+                            <span>{analysis.name || "Untitled Analysis"}</span>
+                            {analysis.jobStatus === "pending" && (
+                              <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">
+                                Queued
+                              </span>
+                            )}
+                            {analysis.jobStatus === "processing" && (
+                              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full animate-pulse">
+                                Processing
+                              </span>
+                            )}
+                            {analysis.jobStatus === "failed" && (
+                              <span className="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">
+                                Failed
+                              </span>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell>
                           {analysis.platform.charAt(0).toUpperCase() + analysis.platform.slice(1)}
@@ -180,13 +198,21 @@ export default function DashboardPage() {
                         <TableCell>
                           <div className="flex items-center gap-1">
                             <MessageCircle className="h-4 w-4 text-neutral-500" />
-                            <span>{analysis.totalMessages.toLocaleString()}</span>
+                            <span>
+                              {(analysis.jobStatus === "pending" || analysis.jobStatus === "processing")
+                                ? "—"
+                                : (analysis.totalMessages?.toLocaleString() ?? "0")}
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">
                             <Users className="h-4 w-4 text-neutral-500" />
-                            <span>{analysis.participantCount}</span>
+                            <span>
+                              {(analysis.jobStatus === "pending" || analysis.jobStatus === "processing")
+                                ? "—"
+                                : (analysis.participantCount ?? "0")}
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell className="text-right flex justify-end gap-2">
@@ -196,7 +222,7 @@ export default function DashboardPage() {
                           >
                             View Analysis
                           </Button>
-                          
+
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button
@@ -215,7 +241,7 @@ export default function DashboardPage() {
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction 
+                                <AlertDialogAction
                                   onClick={() => handleDeleteAnalysis(analysis.id)}
                                   className="bg-red-500 hover:bg-red-600"
                                 >

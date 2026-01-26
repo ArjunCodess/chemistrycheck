@@ -12,7 +12,6 @@ import { authClient } from "@/lib/auth-client";
 import { Platform } from "@/lib/platform-instructions";
 
 export function ChatAnalyzerForm() {
-  const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [platform, setPlatform] = useState<Platform | null>(null);
   const [name, setName] = useState("");
@@ -20,16 +19,8 @@ export function ChatAnalyzerForm() {
   const router = useRouter();
   const { data: session } = authClient.useSession();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-      setBlobUrl(null);
-    }
-  };
-
   const handleBlobUploaded = (url: string) => {
     setBlobUrl(url);
-    setFile(null);
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,9 +29,9 @@ export function ChatAnalyzerForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if ((!file && !blobUrl) || !platform) {
+    if (!blobUrl || !platform) {
       toast.error(
-        platform ? "Please select a file" : "Please select a platform"
+        platform ? "Please upload a file first" : "Please select a platform"
       );
       return;
     }
@@ -52,100 +43,44 @@ export function ChatAnalyzerForm() {
 
     setIsLoading(true);
     try {
-      const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-        e.preventDefault();
-        e.returnValue = "Analysis in progress. Are you sure you want to leave?";
-        return e.returnValue;
-      };
-      window.addEventListener("beforeunload", handleBeforeUnload);
+      toast.info("Queueing analysis...");
 
-      if (blobUrl) {
-        toast.info("Analyzing chat from uploaded file...");
+      const response = await fetch("/api/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          blobUrl,
+          platform,
+          name: name || "Untitled Analysis",
+        }),
+        credentials: "include",
+      });
 
-        const response = await fetch("/api/analyze", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            blobUrl,
-            platform,
-            name: name || "Untitled Analysis",
-          }),
-          credentials: "include",
-        });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({
+          error: `Server error: ${response.status} ${response.statusText}`,
+        }));
+        throw new Error(
+          data.error || data.details || "Failed to queue analysis"
+        );
+      }
 
-        if (!response.ok) {
-          const data = await response.json().catch(() => ({
-            error: `Server error: ${response.status} ${response.statusText}`,
-          }));
-          throw new Error(
-            data.error || data.details || "Failed to analyze chat"
-          );
-        }
+      const data = await response.json();
+      toast.success("Analysis queued! Processing in background...");
 
-        const data = await response.json();
-        toast.success("Chat analysis complete!");
-
-        window.removeEventListener("beforeunload", handleBeforeUnload);
-
-        setTimeout(() => {
-          if (data.analysisId) {
-            router.push(`/analysis/${data.analysisId}`);
-          } else {
-            router.push("/dashboard");
-          }
-        }, 500);
-      } else if (file) {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("platform", platform);
-        formData.append("name", name || "Untitled Analysis");
-
-        toast.info("Uploading file and analyzing chat...");
-
-        const response = await fetch("/api/analyze", {
-          method: "POST",
-          body: formData,
-          credentials: "include",
-          headers: {
-            Accept: "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          if (response.status === 413) {
-            throw new Error(
-              "File too large. Please use a smaller chat export file."
-            );
-          }
-
-          const data = await response.json().catch(() => ({
-            error: `Server error: ${response.status} ${response.statusText}`,
-          }));
-          throw new Error(
-            data.error || data.details || "Failed to analyze chat"
-          );
-        }
-
-        const data = await response.json();
-        toast.success("Chat analysis complete!");
-
-        window.removeEventListener("beforeunload", handleBeforeUnload);
-
-        setTimeout(() => {
-          if (data.analysisId) {
-            router.push(`/analysis/${data.analysisId}`);
-          } else {
-            router.push("/dashboard");
-          }
-        }, 500);
+      // Navigate to analysis page where user will see processing state
+      if (data.analysisId) {
+        router.push(`/analysis/${data.analysisId}`);
+      } else {
+        router.push("/dashboard");
       }
     } catch (error) {
-      console.error("Error uploading file:", error);
+      console.error("Error submitting analysis:", error);
       toast.error(
-        error instanceof Error ? error.message : "Failed to analyze chat"
+        error instanceof Error ? error.message : "Failed to start analysis"
       );
     } finally {
       setIsLoading(false);
@@ -169,16 +104,13 @@ export function ChatAnalyzerForm() {
         platform={platform}
         setPlatform={setPlatform as (p: Platform) => void}
       />
-      <FileUpload
-        handleFileChange={handleFileChange}
-        onBlobUploaded={handleBlobUploaded}
-      />
+      <FileUpload onBlobUploaded={handleBlobUploaded} />
       <Button
         type="submit"
-        disabled={(!file && !blobUrl) || !platform || isLoading || !session}
+        disabled={!blobUrl || !platform || isLoading || !session}
         className="w-full py-2 sm:py-3 text-sm sm:text-base transition-colors"
       >
-        {isLoading ? "Analyzing..." : "Analyze Chat"}
+        {isLoading ? "Queueing..." : "Analyze Chat"}
       </Button>
       {!session && (
         <p className="text-sm text-red-500">

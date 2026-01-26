@@ -18,18 +18,18 @@ export async function GET(request: NextRequest) {
         userId = session.user.id;
       } else {
         // If no session, check for Authorization header
-        const authHeader = request.headers.get('Authorization');
-        
-        if (authHeader && authHeader.startsWith('Bearer ')) {
+        const authHeader = request.headers.get("Authorization");
+
+        if (authHeader && authHeader.startsWith("Bearer ")) {
           const token = authHeader.substring(7);
-          
+
           // Find session by token
           const [sessionRecord] = await db
             .select()
             .from(sessionTable)
             .where(eq(sessionTable.token, token))
             .limit(1);
-          
+
           if (sessionRecord && sessionRecord.userId) {
             userId = sessionRecord.userId;
           }
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       if (!userId) {
         return NextResponse.json(
           { error: "Authentication required" },
-          { status: 401 }
+          { status: 401 },
         );
       }
 
@@ -51,16 +51,13 @@ export async function GET(request: NextRequest) {
         .limit(1);
 
       if (!userRecord) {
-        return NextResponse.json(
-          { error: "User not found" },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
       }
     } catch (authError) {
       console.error("Authentication error:", authError);
       return NextResponse.json(
         { error: "Authentication failed", details: String(authError) },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -74,6 +71,7 @@ export async function GET(request: NextRequest) {
         totalMessages: chatAnalysis.totalMessages,
         totalWords: chatAnalysis.totalWords,
         participantCount: chatAnalysis.participantCount,
+        jobStatus: chatAnalysis.jobStatus,
       })
       .from(chatAnalysis)
       .where(eq(chatAnalysis.userId, userId))
@@ -84,7 +82,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching analyses:", error);
     return NextResponse.json(
       { error: "Failed to fetch analyses", details: String(error) },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -53,6 +53,7 @@ const TabLoadingFallback = () => (
 export default function AnalysisDashboard() {
   const [stats, setStats] = useState<ChatStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [jobStatus, setJobStatus] = useState<"pending" | "processing" | "ready" | "failed">("pending");
   const [analysisDetails, setAnalysisDetails] = useState<{
     name: string;
     createdAt: string;
@@ -87,7 +88,7 @@ export default function AnalysisDashboard() {
           redirect("/sign-in");
         }
       };
-      
+
       checkAnalysisAccess();
     }
   }, [session, isPending, analysisId]);
@@ -115,7 +116,14 @@ export default function AnalysisDashboard() {
 
         const data = await response.json();
 
-        setStats(data.stats);
+        // Set embedding status
+        setJobStatus(data.jobStatus || "ready");
+
+        // Only set stats if they're available (not empty object)
+        if (data.stats && Object.keys(data.stats).length > 0) {
+          setStats(data.stats);
+        }
+
         setAnalysisDetails({
           name: data.name,
           createdAt: data.createdAt,
@@ -124,7 +132,7 @@ export default function AnalysisDashboard() {
           userId: data.userId
         });
         setEditedName(data.name || "Untitled Analysis");
-        
+
         if (data.isPublic) {
           setShareUrl(`${window.location.origin}/analysis/${analysisId}`);
         } else {
@@ -142,6 +150,42 @@ export default function AnalysisDashboard() {
       fetchAnalysis();
     }
   }, [analysisId]);
+
+  // Poll for status updates while processing
+  useEffect(() => {
+    if (jobStatus !== "pending" && jobStatus !== "processing") {
+      return;
+    }
+
+    const pollInterval = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/analyses/${analysisId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setJobStatus(data.jobStatus || "ready");
+
+          // Update stats if now available
+          if (data.stats && Object.keys(data.stats).length > 0) {
+            setStats(data.stats);
+          }
+
+          // Stop polling if ready or failed
+          if (data.jobStatus === "ready" || data.jobStatus === "failed") {
+            clearInterval(pollInterval);
+            if (data.jobStatus === "ready") {
+              toast.success("Analysis complete!");
+            } else {
+              toast.error("Analysis failed. Please try again.");
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error polling status:", error);
+      }
+    }, 3000); // Poll every 3 seconds
+
+    return () => clearInterval(pollInterval);
+  }, [analysisId, jobStatus]);
 
   const handleUploadNewChat = () => {
     router.push("/new");
@@ -178,12 +222,12 @@ export default function AnalysisDashboard() {
       toast.error("Failed to update analysis name");
     }
   };
-  
+
   const togglePublicStatus = async () => {
     if (!analysisDetails) return;
-    
+
     const newPublicStatus = !analysisDetails.isPublic;
-    
+
     try {
       const response = await fetch(`/api/analyses/${analysisId}`, {
         method: "PATCH",
@@ -201,7 +245,7 @@ export default function AnalysisDashboard() {
       setAnalysisDetails((prev) =>
         prev ? { ...prev, isPublic: newPublicStatus } : null
       );
-      
+
       if (newPublicStatus) {
         setShareUrl(`${window.location.origin}/analysis/${analysisId}`);
         toast.success("Analysis is now public and shareable");
@@ -214,7 +258,7 @@ export default function AnalysisDashboard() {
       toast.error("Failed to update sharing status");
     }
   };
-  
+
   const copyShareUrl = () => {
     if (shareUrl) {
       navigator.clipboard.writeText(shareUrl);
@@ -226,6 +270,40 @@ export default function AnalysisDashboard() {
     return (
       <div className="flex items-center justify-center min-h-screen w-full">
         <div className="text-xl">Loading analytics...</div>
+      </div>
+    );
+  }
+
+  // Show processing state while job is running (Option B)
+  if (jobStatus === "pending" || jobStatus === "processing") {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <div className="text-xl font-medium">
+          {jobStatus === "pending" ? "Preparing analysis..." : "Processing your chat..."}
+        </div>
+        <p className="text-neutral-500 text-center max-w-md">
+          We&apos;re parsing your conversation and generating insights.
+          This may take a few moments for large chats.
+        </p>
+        <p className="text-sm text-neutral-400">
+          {analysisDetails?.platform && `Platform: ${analysisDetails.platform.charAt(0).toUpperCase() + analysisDetails.platform.slice(1)}`}
+        </p>
+      </div>
+    );
+  }
+
+  // Show error state if processing failed
+  if (jobStatus === "failed") {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+        <div className="text-xl text-red-500">Analysis Failed</div>
+        <p className="text-neutral-500 text-center max-w-md">
+          There was an error processing your chat. Please try uploading again.
+        </p>
+        <Button onClick={() => router.push("/new")}>
+          Upload New Chat
+        </Button>
       </div>
     );
   }
@@ -325,7 +403,7 @@ export default function AnalysisDashboard() {
           >
             <ArrowLeft className="h-4 w-4" /> Back
           </Button>
-          
+
           {session && session.user && analysisDetails?.userId === session.user.id && (
             <>
               <div className="relative w-full sm:w-1/2 md:w-fit">
@@ -354,9 +432,9 @@ export default function AnalysisDashboard() {
                           <Copy className="h-4 w-4" />
                         </Button>
                       </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                      <Button
+                        variant="outline"
+                        size="sm"
                         className="w-full mt-1"
                         onClick={togglePublicStatus}
                       >
@@ -374,7 +452,7 @@ export default function AnalysisDashboard() {
                   </Button>
                 )}
               </div>
-              
+
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="destructive" className="w-full sm:w-1/2 md:w-fit">
@@ -422,7 +500,7 @@ export default function AnalysisDashboard() {
               </AlertDialog>
             </>
           )}
-          
+
           {(!session || (session.user && analysisDetails?.userId !== session.user.id)) && analysisDetails?.isPublic && (
             <Button
               variant="outline"
@@ -518,16 +596,16 @@ export default function AnalysisDashboard() {
                 {activeTab === "tldr"
                   ? "TLDR"
                   : activeTab === "basic"
-                  ? "Basic Stats"
-                  : activeTab === "time"
-                  ? "Response Times"
-                  : activeTab === "media"
-                  ? "Media"
-                  : activeTab === "emoji"
-                  ? "Emoji Analysis"
-                  : activeTab === "ai"
-                  ? "AI Insights"
-                  : "Activity Patterns"}
+                    ? "Basic Stats"
+                    : activeTab === "time"
+                      ? "Response Times"
+                      : activeTab === "media"
+                        ? "Media"
+                        : activeTab === "emoji"
+                          ? "Emoji Analysis"
+                          : activeTab === "ai"
+                            ? "AI Insights"
+                            : "Activity Patterns"}
               </span>
               <Menu className="h-4 w-4" />
             </Button>
