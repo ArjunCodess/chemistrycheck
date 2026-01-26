@@ -22,51 +22,35 @@ export function ChatSidebarProvider({
   const [chatName, setChatName] = useState<string | undefined>(undefined);
   const [shouldShowSidebar, setShouldShowSidebar] = useState(false);
 
-  // Determine if sidebar should be shown
-  useEffect(() => {
-    // Only show sidebar if we have a valid analysis ID and we are on an analysis route
-    const isAnalysisRoute = pathname?.includes('/analysis/');
+  // Only consider showing sidebar when on an analysis route with an id
+  const isEligibleRoute = Boolean(analysisId && pathname?.includes("/analysis/"));
 
-    // Initial check based on route
-    if (analysisId && isAnalysisRoute) {
-      // If we are pending, we wait. If we have session, we can check.
-      // We set to true tentatively IF we assume optimistic? 
-      // No, user request implies strict hiding if not owner.
-      // So we default to false (initialized) and set true only when verified owner.
-      // BUT current code sets it to true here: allow that for layout, then hide if mismatch?
-      // Better: Make this effect ONLY set basic eligibility, and let the fetch effect finalize it.
-      // Actually, let's keep the existing structure but refine the ownership check.
-      setShouldShowSidebar(true);
-    } else {
+  useEffect(() => {
+    if (!isEligibleRoute) {
       setShouldShowSidebar(false);
     }
-  }, [analysisId, pathname]);
+  }, [isEligibleRoute]);
 
   useEffect(() => {
-    const fetchAnalysisAndCheckOwnership = async () => {
-      if (!analysisId) return;
+    if (!analysisId || isPending) return;
 
+    const fetchAnalysisAndCheckOwnership = async () => {
       try {
         const response = await fetch(`/api/analyses/${analysisId}`);
         if (response.ok) {
           const data = await response.json();
           setChatName(data.name || undefined);
-
-          // STRICT OWNERSHIP CHECK:
-          // Wait for auth to settle
-          if (!isPending) {
-            const isOwner = data.userId === session?.user?.id;
-            setShouldShowSidebar(isOwner);
-          }
+          setShouldShowSidebar(data.userId === session?.user?.id);
+        } else {
+          setShouldShowSidebar(false);
         }
       } catch (error) {
         console.error("Error fetching analysis name:", error);
+        setShouldShowSidebar(false);
       }
     };
 
-    if (analysisId && !isPending) {
-      fetchAnalysisAndCheckOwnership();
-    }
+    fetchAnalysisAndCheckOwnership();
   }, [analysisId, isPending, session?.user?.id]);
 
   if (!shouldShowSidebar) {
