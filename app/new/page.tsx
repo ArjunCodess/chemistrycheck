@@ -34,14 +34,15 @@ export default function Home() {
     <main className="min-h-[calc(100vh-70px)] bg-gradient-to-b from-neutral-100 to-white px-2 py-4">
       <div className="w-full md:max-w-xl lg:max-w-2xl mx-auto flex flex-col justify-center items-center">
         <Card className="bg-card backdrop-blur-sm border-neutral-200 shadow-sm sm:gap-0">
-          <CardHeader className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 pb-4">
+          <CardHeader className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 pb-6">
             <div className="order-2 sm:order-1 flex-1 text-center sm:text-left sm:pr-4">
               <CardTitle className="text-xl sm:text-2xl md:text-3xl font-bold text-neutral-900 mb-2 sm:mb-3">
                 ChemistryCheck
               </CardTitle>
-              <CardDescription className="text-sm sm:text-base text-neutral-600 leading-relaxed">
+              <CardDescription className="text-balance text-sm sm:text-base text-neutral-600 leading-relaxed">
                 Upload your chat history to analyze communication patterns and
-                get insights
+                get insights. Open source for transparency, files are securely
+                deleted after analysis.
               </CardDescription>
             </div>
             <div className="flex items-center justify-center sm:justify-end sm:order-2 order-1">

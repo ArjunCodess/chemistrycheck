@@ -46,6 +46,10 @@ export default function Home() {
                       <Check className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-primary-600" />{" "}
                       Spot red flags and communication patterns
                     </li>
+                    <li className="flex gap-1.5 items-center text-left">
+                      <Check className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-primary-600" />{" "}
+                      Open source & files deleted after analysis
+                    </li>
                   </div>
                 </ul>
                 <Link href="/new" className="w-full mt-2">
