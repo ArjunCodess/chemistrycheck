@@ -24,7 +24,8 @@ CREATE TABLE "chat_analysis" (
 	"total_messages" integer,
 	"total_words" integer,
 	"participant_count" integer,
-	"is_public" boolean DEFAULT false NOT NULL
+	"is_public" boolean DEFAULT false NOT NULL,
+	"job_status" text DEFAULT 'pending' NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "message_embeddings" (

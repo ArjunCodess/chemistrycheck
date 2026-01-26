@@ -73,6 +73,11 @@ export const chatAnalysis = pgTable("chat_analysis", {
   totalWords: integer("total_words"),
   participantCount: integer("participant_count"),
   isPublic: boolean("is_public").default(false).notNull(),
+  jobStatus: text("job_status", {
+    enum: ["pending", "processing", "ready", "failed"],
+  })
+    .default("pending")
+    .notNull(),
 });
 
 export const messageEmbeddings = pgTable(

@@ -1,5 +1,5 @@
 {
-  "id": "7af3b3bf-6212-4db7-ae55-e8b9aa783a64",
+  "id": "01ad5065-f69f-493f-8246-ee603a05ee9f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -175,6 +175,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": false
+        },
+        "job_status": {
+          "name": "job_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
         }
       },
       "indexes": {},
