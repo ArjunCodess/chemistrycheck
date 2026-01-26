@@ -4,14 +4,18 @@ import { chunkMessages, type Message } from "./chunking";
 
 /**
  * Embed and store messages for a given analysis
+ * @param onProgress - Optional callback for progress updates (current, total)
  */
 export async function embedAndStoreMessages(
   analysisId: string,
   messages: Message[],
+  onProgress?: (current: number, total: number) => void,
 ): Promise<void> {
   const chunks = chunkMessages(messages);
+  const total = chunks.length;
 
-  for (const chunk of chunks) {
+  for (let i = 0; i < chunks.length; i++) {
+    const chunk = chunks[i];
     const embedding = await generateEmbedding(chunk.content);
 
     await db.insert(messageEmbeddings).values({
@@ -23,6 +27,11 @@ export async function embedAndStoreMessages(
       messageCount: chunk.messageCount,
       embedding,
     });
+
+    // Report progress
+    if (onProgress) {
+      onProgress(i + 1, total);
+    }
   }
 }
 

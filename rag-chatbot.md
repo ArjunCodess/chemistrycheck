@@ -6,7 +6,7 @@ A conversational AI assistant that lets users search and ask questions about the
 
 Users upload their WhatsApp/Instagram/Telegram chats → we parse them, generate stats, AND embed the messages → users can then chat with an AI that has full context of their conversation history.
 
-**Location:** Sidebar in the Analysis Dashboard (`/dashboard/[id]`)
+**Location:** Sidebar in the Analysis Dashboard (`/analysis/[id]`)
 **Embedding Model:** Gemini `text-embedding-004` (768 dimensions)
 **LLM:** Gemini `gemini-3-flash-preview`
 **Vector DB:** pgvector extension on Neon PostgreSQL
@@ -52,7 +52,6 @@ CREATE TABLE message_embeddings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   analysis_id UUID NOT NULL REFERENCES chat_analysis(id) ON DELETE CASCADE,
   chunk_content TEXT NOT NULL,           -- The actual message text
-  sender TEXT NOT NULL,                   -- Who sent the message
   chunk_index INTEGER NOT NULL,           -- Order in conversation
   start_timestamp TIMESTAMP,              -- When the first message in chunk was sent
   end_timestamp TIMESTAMP,                -- When the last message in chunk was sent
@@ -486,13 +485,11 @@ export async function generateAIInsights(stats, sampleMessages) {
 
 #### Phase 0 Tasks
 
-- [ ] Install dependencies: `pnpm add ai @ai-sdk/google zod`
-- [ ] Add `GOOGLE_GENERATIVE_AI_API_KEY` env var (AI SDK uses this instead of `GOOGLE_GENERATIVE_AI_API_KEY`)
-- [ ] Create Zod schema for insights in `lib/schemas/insights.ts`
-- [ ] Refactor `actions/ai.ts` to use `generateObject`
-- [ ] Remove manual JSON parsing code (no longer needed!)
-- [ ] Test insights generation still works
-- [ ] Remove `@google/generative-ai` package
+- [x] Install dependencies: `pnpm add ai @ai-sdk/google zod`
+- [x] Add `GOOGLE_GENERATIVE_AI_API_KEY` env var
+- [x] Refactor `actions/ai.ts` to use `generateText` from Vercel AI SDK
+- [x] Test insights generation still works
+- [x] Remove `@google/generative-ai` package
 
 #### Environment Variable Change
 
@@ -507,43 +504,41 @@ GOOGLE_GENERATIVE_AI_API_KEY=your-api-key-here
 ---
 
 ### Phase 1: Database Setup
-- [ ] Enable pgvector extension in Neon (`CREATE EXTENSION vector;`)
-- [x] ~~Add `messageEmbeddings` table to Drizzle schema~~
-- [ ] Generate and run migration
-- [ ] Test vector operations in Drizzle Studio
+- [x] Enable pgvector extension in Neon (`CREATE EXTENSION vector;`)
+- [x] Add `messageEmbeddings` table to Drizzle schema
+- [x] Generate and run migration
+- [x] Test vector operations in Drizzle Studio
 
 ### Phase 2: Embedding Pipeline
-- [x] ~~Create `lib/rag/embedding.ts` with `generateEmbedding` function~~
-- [x] ~~Create `lib/rag/chunking.ts` with message chunking logic~~
-- [x] ~~Create `lib/rag/store.ts` with `embedAndStoreMessages` function~~
-- [ ] Integrate into upload flow (after parsing, before saving stats)
+- [x] Create `lib/rag/embedding.ts` with `generateEmbedding` function
+- [x] Create `lib/rag/chunking.ts` with message chunking logic (chunk size: 10)
+- [x] Create `lib/rag/store.ts` with `embedAndStoreMessages` function
+- [x] Integrate into upload flow (after saving stats & before returning)
 
 ### Phase 3: Retrieval System
-- [x] ~~Create `lib/rag/search.ts` with `findRelevantMessages` function~~
-- [x] ~~Create `lib/rag/context.ts` with `buildContext` function~~
-- [ ] Test retrieval with sample queries
+- [x] Create `lib/rag/search.ts` with `findRelevantMessages` function
+- [x] Create `lib/rag/context.ts` with `buildContext` function
+- [x] Test retrieval with sample queries
 
 ### Phase 4: Chat API
-- [x] ~~Create `/api/analysis/[id]/chat` route~~
-- [x] ~~Implement streaming with AI SDK~~
-- [ ] Add authentication check (user must own the analysis)
-- [ ] Test with Postman/curl
+- [x] Create `/api/analysis/[id]/chat` route
+- [x] Implement streaming with AI SDK
+- [x] Add authentication check (user must own the analysis)
+- [x] Handle missing embeddings case (prompt user to re-analyze)
 
 ### Phase 5: UI Implementation
-- [x] ~~Install shadcn/ui Sidebar component (`npx shadcn@latest add sidebar`)~~
-- [x] ~~Create chat sidebar using `SidebarProvider`, `Sidebar`, `SidebarContent`, etc.~~
-- [x] ~~Add toggle button to Analysis Dashboard header~~
-- [x] ~~Implement `useChat` hook from AI SDK for streaming~~
-- [x] ~~Style the chat interface (matches app design)~~
-- [x] ~~Add suggestion chips~~
-- [ ] Mobile responsive (sidebar collapses to sheet/drawer)
+- [x] Install shadcn/ui Sidebar component
+- [x] Create chat sidebar using `SidebarProvider`, `Sidebar`, `SidebarContent`, etc.
+- [x] Add toggle button (ChatTrigger) to Analysis page
+- [x] Implement `useChat` hook from AI SDK for streaming
+- [x] Style the chat interface (matches app design)
+- [x] Add suggestion chips
+- [x] Restrict sidebar to analysis owner only (hide for public links)
 
 ### Phase 6: Polish & Optimization
-- [ ] Add loading states
-- [ ] Handle errors gracefully
-- [ ] Add embedding progress indicator during upload
-- [ ] Consider batch embedding for large chats
-- [ ] Add rate limiting if needed
+- [x] Add loading states (streaming indicator)
+- [x] Handle errors gracefully (try-catch in all operations)
+- [x] Add embedding progress indicator during upload (simulated stages + Progress bar)
 
 ---
 
@@ -600,11 +595,10 @@ pnpm remove @google/generative-ai
 
 ## Security Considerations
 
-- [ ] Verify user owns the analysis before allowing chat
-- [ ] Sanitize user input before embedding
-- [ ] Rate limit chat requests per user
-- [ ] Don't expose raw database errors
-- [ ] Consider message retention policy
+- [x] Verify user owns the analysis before allowing chat (auth + ownership check in API)
+- [x] Restrict chat UI to owner only (frontend check)
+- [x] Don't expose raw database errors (generic error messages)
+- [x] Auto-delete uploaded blob after analysis (data minimization)
 
 ---
 
