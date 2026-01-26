@@ -67,7 +67,7 @@ Want to run ChemistryCheck locally? Here's what you need to do.
    APP_URL=http://localhost:3000
 
    # AI (Google Gemini)
-   GEMINI_API_KEY=your_gemini_api_key
+   GOOGLE_GENERATIVE_AI_API_KEY=your_GOOGLE_GENERATIVE_AI_API_KEY
 
    # Authentication (Google OAuth)
    GOOGLE_CLIENT_ID=your_google_client_id
@@ -148,7 +148,7 @@ The analysis includes everything from basic message counts to advanced AI insigh
 
 ### AI & Processing
 
-- **Google Gemini AI** (gemini-2.0-flash-lite) for generating relationship insights and analysis
+- **Google Gemini AI** (gemini-3-flash-preview) for generating relationship insights and analysis
 - Custom chat parsers for WhatsApp, Telegram, and Instagram exports
 
 ### UI and Design
@@ -187,7 +187,7 @@ This application is set up to deploy on Vercel.
    ```env
    DATABASE_URL=your_postgresql_connection_string
    APP_URL=https://your-domain.vercel.app
-   GEMINI_API_KEY=your_gemini_api_key
+   GOOGLE_GENERATIVE_AI_API_KEY=your_GOOGLE_GENERATIVE_AI_API_KEY
    GOOGLE_CLIENT_ID=your_google_client_id
    GOOGLE_CLIENT_SECRET=your_google_client_secret
    ```

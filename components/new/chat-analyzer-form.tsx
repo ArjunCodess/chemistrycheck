@@ -132,10 +132,8 @@ export function ChatAnalyzerForm() {
         const data = await response.json();
         toast.success("Chat analysis complete!");
 
-        // Remove beforeunload event listener
         window.removeEventListener("beforeunload", handleBeforeUnload);
 
-        // Add a small delay before redirecting to show the toast
         setTimeout(() => {
           if (data.analysisId) {
             router.push(`/analysis/${data.analysisId}`);
@@ -180,14 +178,7 @@ export function ChatAnalyzerForm() {
         disabled={(!file && !blobUrl) || !platform || isLoading || !session}
         className="w-full py-2 sm:py-3 text-sm sm:text-base transition-colors"
       >
-        {isLoading ? (
-          <div className="flex items-center gap-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-            <span>Analyzing... Please don&apos;t close this tab</span>
-          </div>
-        ) : (
-          "Analyze Chat"
-        )}
+        {isLoading ? "Analyzing..." : "Analyze Chat"}
       </Button>
       {!session && (
         <p className="text-sm text-red-500">
