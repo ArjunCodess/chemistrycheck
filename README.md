@@ -6,7 +6,7 @@
 <h2 align="center">ChemistryCheck - AI-Powered Chat Analysis & Relationship Insights</h2>
 
 <p align="center">
-  Decode your chats. Understand your relationships. Get brutally honest insights about what's really happening between the lines. Upload WhatsApp, Telegram, or Instagram chat exports and let AI analyze communication patterns, spot red flags, and reveal relationship dynamics.
+  Decode your chats. Understand your relationships. Get brutally honest insights about what's really happening between the lines. Upload WhatsApp, Telegram, or Instagram chat exports and let AI analyze communication patterns, spot red flags, and reveal relationship dynamics. Plus, chat with an AI that has full context of your conversation history.
 </p>
 
 ## 📝 Table of Contents
@@ -116,7 +116,13 @@ The application should be running at `http://localhost:3000`.
    - Emoji analysis
    - AI-generated insights and summaries
 
-4. **Shareable Analysis**
+4. **RAG Chatbot** 🆕
+   - Chat with an AI that has full context of your conversation
+   - Ask questions like "When did we first say I love you?" or "Find messages about our trip"
+   - Semantic search powered by pgvector embeddings
+   - Owner-only access (hidden on public/shared links)
+
+5. **Shareable Analysis**
    - Make analyses public and shareable
    - View detailed breakdowns of communication patterns
 
@@ -148,7 +154,10 @@ The analysis includes everything from basic message counts to advanced AI insigh
 
 ### AI & Processing
 
+- **Vercel AI SDK** for unified AI interactions and streaming
 - **Google Gemini AI** (gemini-3-flash-preview) for generating relationship insights and analysis
+- **Gemini text-embedding-004** for semantic embeddings (RAG chatbot)
+- **pgvector** for vector similarity search
 - Custom chat parsers for WhatsApp, Telegram, and Instagram exports
 
 ### UI and Design
