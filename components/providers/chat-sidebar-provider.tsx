@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/chatbot/app-sidebar";
 import { ChatTrigger } from "@/components/dashboard/chatbot/chat-trigger";
+import { authClient } from "@/lib/auth-client";
 
 export function ChatSidebarProvider({
   children,
@@ -13,6 +14,8 @@ export function ChatSidebarProvider({
 }) {
   const params = useParams();
   const pathname = usePathname();
+  const { data: session, isPending } = authClient.useSession();
+
   // Check if we are on an analysis page
   // The route is typically /analysis/[id] or /dashboard/[id]
   // We should check if 'id' param is present and matches the URL pattern
@@ -26,11 +29,24 @@ export function ChatSidebarProvider({
     // Only show sidebar if we have a valid analysis ID and we are on an analysis route
     // This prevents it from showing up on other pages that might accidentally match param names
     const isAnalysisRoute = pathname?.includes('/analysis/') || pathname?.includes('/dashboard/');
-    setShouldShowSidebar(!!analysisId && !!isAnalysisRoute);
+
+    // Initial check based on route
+    if (analysisId && isAnalysisRoute) {
+      // If we are pending, we wait. If we have session, we can check.
+      // We set to true tentatively IF we assume optimistic? 
+      // No, user request implies strict hiding if not owner.
+      // So we default to false (initialized) and set true only when verified owner.
+      // BUT current code sets it to true here: allow that for layout, then hide if mismatch?
+      // Better: Make this effect ONLY set basic eligibility, and let the fetch effect finalize it.
+      // Actually, let's keep the existing structure but refine the ownership check.
+      setShouldShowSidebar(true);
+    } else {
+      setShouldShowSidebar(false);
+    }
   }, [analysisId, pathname]);
 
   useEffect(() => {
-    const fetchAnalysisName = async () => {
+    const fetchAnalysisAndCheckOwnership = async () => {
       if (!analysisId) return;
 
       try {
@@ -38,16 +54,23 @@ export function ChatSidebarProvider({
         if (response.ok) {
           const data = await response.json();
           setChatName(data.name || undefined);
+
+          // STRICT OWNERSHIP CHECK:
+          // Wait for auth to settle
+          if (!isPending) {
+            const isOwner = data.userId === session?.user?.id;
+            setShouldShowSidebar(isOwner);
+          }
         }
       } catch (error) {
         console.error("Error fetching analysis name:", error);
       }
     };
 
-    if (analysisId && shouldShowSidebar) {
-      fetchAnalysisName();
+    if (analysisId && !isPending) {
+      fetchAnalysisAndCheckOwnership();
     }
-  }, [analysisId, shouldShowSidebar]);
+  }, [analysisId, isPending, session?.user?.id]);
 
   if (!shouldShowSidebar) {
     return <>{children}</>;

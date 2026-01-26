@@ -6,6 +6,10 @@ import {
   checkEmbeddingsExist,
 } from "@/lib/rag";
 import { NextRequest } from "next/server";
+import { auth } from "@/lib/auth";
+import { db } from "@/db";
+import { chatAnalysis } from "@/db/schema";
+import { eq, and } from "drizzle-orm";
 
 export const maxDuration = 30;
 
@@ -34,6 +38,34 @@ export async function POST(
 ) {
   try {
     const { id: analysisId } = await params;
+
+    // Auth check
+    const session = await auth.api.getSession({
+      headers: req.headers,
+    });
+
+    if (!session?.user?.id) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+
+    // Authorization check: Verify user owns this analysis
+    const [analysis] = await db
+      .select()
+      .from(chatAnalysis)
+      .where(
+        and(
+          eq(chatAnalysis.id, analysisId),
+          eq(chatAnalysis.userId, session.user.id),
+        ),
+      )
+      .limit(1);
+
+    if (!analysis) {
+      return new Response("Analysis not found or access denied", {
+        status: 404,
+      });
+    }
+
     const { messages }: { messages: UIMessage[] } = await req.json();
 
     // Get the latest user message for RAG retrieval
