@@ -199,9 +199,9 @@ export default function DashboardPage() {
                           <div className="flex items-center gap-1">
                             <MessageCircle className="h-4 w-4 text-neutral-500" />
                             <span>
-                              {(!analysis.jobStatus || analysis.jobStatus === "ready")
-                                ? (analysis.totalMessages?.toLocaleString() ?? "0")
-                                : "—"}
+                              {(analysis.jobStatus === "pending" || analysis.jobStatus === "processing")
+                                ? "—"
+                                : (analysis.totalMessages?.toLocaleString() ?? "0")}
                             </span>
                           </div>
                         </TableCell>
@@ -209,9 +209,9 @@ export default function DashboardPage() {
                           <div className="flex items-center gap-1">
                             <Users className="h-4 w-4 text-neutral-500" />
                             <span>
-                              {(!analysis.jobStatus || analysis.jobStatus === "ready")
-                                ? (analysis.participantCount ?? "0")
-                                : "—"}
+                              {(analysis.jobStatus === "pending" || analysis.jobStatus === "processing")
+                                ? "—"
+                                : (analysis.participantCount ?? "0")}
                             </span>
                           </div>
                         </TableCell>
