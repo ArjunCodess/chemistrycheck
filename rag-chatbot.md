@@ -390,7 +390,7 @@ Before adding RAG, we need to migrate the existing `actions/ai.ts` from `@google
 // actions/ai.ts - BEFORE
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
 const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
 const generationConfig = {
@@ -487,7 +487,7 @@ export async function generateAIInsights(stats, sampleMessages) {
 #### Phase 0 Tasks
 
 - [ ] Install dependencies: `pnpm add ai @ai-sdk/google zod`
-- [ ] Add `GOOGLE_GENERATIVE_AI_API_KEY` env var (AI SDK uses this instead of `GEMINI_API_KEY`)
+- [ ] Add `GOOGLE_GENERATIVE_AI_API_KEY` env var (AI SDK uses this instead of `GOOGLE_GENERATIVE_AI_API_KEY`)
 - [ ] Create Zod schema for insights in `lib/schemas/insights.ts`
 - [ ] Refactor `actions/ai.ts` to use `generateObject`
 - [ ] Remove manual JSON parsing code (no longer needed!)
@@ -500,8 +500,8 @@ export async function generateAIInsights(stats, sampleMessages) {
 # .env - AI SDK uses a different env var name
 GOOGLE_GENERATIVE_AI_API_KEY=your-api-key-here
 
-# You can keep GEMINI_API_KEY for backwards compat and alias it:
-# GOOGLE_GENERATIVE_AI_API_KEY=${GEMINI_API_KEY}
+# You can keep GOOGLE_GENERATIVE_AI_API_KEY for backwards compat and alias it:
+# GOOGLE_GENERATIVE_AI_API_KEY=${GOOGLE_GENERATIVE_AI_API_KEY}
 ```
 
 ---
