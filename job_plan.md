@@ -89,7 +89,7 @@ For “analysis visible soon, RAG later,” Option A is enough. For “everythin
 
 - **Frontend**
 - After submit, redirect to `/analysis/[id] `as you do today; consider returning `analysisId` from the API without waiting for the job.
-- On the analysis page, if `embedding_status === 'pending'`, show “Indexing conversation…” in the chatbot area and poll status until `ready` (or use a “sync”/webhook if you adopt it).
+- On the analysis page, if `job_status === 'pending'`, show “Indexing conversation…” in the chatbot area and poll status until `ready` (or use a “sync”/webhook if you adopt it).
 - When `ready`, show the normal chat UI; existing RAG logic already uses `checkEmbeddingsExist` and can rely on this status.
 
 - **Observability**
