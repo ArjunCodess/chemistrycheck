@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -8,61 +8,17 @@ import { PlatformSelector } from "../shared/platform-selector";
 import { FileUpload } from "./file-upload";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
 import { authClient } from "@/lib/auth-client";
 import { Platform } from "@/lib/platform-instructions";
-
-type LoadingStage = "idle" | "parsing" | "insights" | "embedding" | "complete";
-
-const STAGE_MESSAGES: Record<LoadingStage, string> = {
-  idle: "",
-  parsing: "Parsing your chat export...",
-  insights: "Generating AI insights...",
-  embedding: "Creating search index...",
-  complete: "Analysis complete!",
-};
 
 export function ChatAnalyzerForm() {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingStage, setLoadingStage] = useState<LoadingStage>("idle");
-  const [progress, setProgress] = useState(0);
   const [platform, setPlatform] = useState<Platform | null>(null);
   const [name, setName] = useState("");
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const router = useRouter();
   const { data: session } = authClient.useSession();
-
-  // Animate progress based on stage
-  useEffect(() => {
-    if (loadingStage === "idle") {
-      setProgress(0);
-      return;
-    }
-
-    const stageProgress: Record<LoadingStage, number> = {
-      idle: 0,
-      parsing: 25,
-      insights: 60,
-      embedding: 90,
-      complete: 100,
-    };
-
-    const targetProgress = stageProgress[loadingStage];
-
-    // Smooth animation to target
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= targetProgress) {
-          clearInterval(interval);
-          return targetProgress;
-        }
-        return prev + 1;
-      });
-    }, 50);
-
-    return () => clearInterval(interval);
-  }, [loadingStage]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -95,7 +51,6 @@ export function ChatAnalyzerForm() {
     }
 
     setIsLoading(true);
-    setLoadingStage("parsing");
     try {
       const handleBeforeUnload = (e: BeforeUnloadEvent) => {
         e.preventDefault();
@@ -103,12 +58,6 @@ export function ChatAnalyzerForm() {
         return e.returnValue;
       };
       window.addEventListener("beforeunload", handleBeforeUnload);
-
-      // Simulate stage progression (API doesn't stream progress)
-      const stageTimers = [
-        setTimeout(() => setLoadingStage("insights"), 3000),
-        setTimeout(() => setLoadingStage("embedding"), 8000),
-      ];
 
       if (blobUrl) {
         toast.info("Analyzing chat from uploaded file...");
@@ -183,10 +132,8 @@ export function ChatAnalyzerForm() {
         const data = await response.json();
         toast.success("Chat analysis complete!");
 
-        // Remove beforeunload event listener
         window.removeEventListener("beforeunload", handleBeforeUnload);
 
-        // Add a small delay before redirecting to show the toast
         setTimeout(() => {
           if (data.analysisId) {
             router.push(`/analysis/${data.analysisId}`);
@@ -202,7 +149,6 @@ export function ChatAnalyzerForm() {
       );
     } finally {
       setIsLoading(false);
-      setLoadingStage("idle");
     }
   };
 
@@ -232,23 +178,8 @@ export function ChatAnalyzerForm() {
         disabled={(!file && !blobUrl) || !platform || isLoading || !session}
         className="w-full py-2 sm:py-3 text-sm sm:text-base transition-colors"
       >
-        {isLoading ? (
-          <div className="flex items-center gap-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-            <span>Analyzing...</span>
-          </div>
-        ) : (
-          "Analyze Chat"
-        )}
+        {isLoading ? "Analyzing..." : "Analyze Chat"}
       </Button>
-      {isLoading && (
-        <div className="space-y-2">
-          <Progress value={progress} className="h-2" />
-          <p className="text-sm text-center text-muted-foreground">
-            {STAGE_MESSAGES[loadingStage]}
-          </p>
-        </div>
-      )}
       {!session && (
         <p className="text-sm text-red-500">
           You must be signed in to analyze chats
