@@ -83,7 +83,6 @@ export const messageEmbeddings = pgTable(
       .notNull()
       .references(() => chatAnalysis.id, { onDelete: "cascade" }),
     chunkContent: text("chunk_content").notNull(),
-    sender: text("sender").notNull(),
     chunkIndex: integer("chunk_index").notNull(),
     startTimestamp: timestamp("start_timestamp"),
     endTimestamp: timestamp("end_timestamp"),

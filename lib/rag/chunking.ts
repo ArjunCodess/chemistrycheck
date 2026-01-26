@@ -6,7 +6,6 @@ export interface Message {
 
 export interface MessageChunk {
   content: string;
-  sender: string; // "mixed" if multiple senders
   startTimestamp: Date;
   endTimestamp: Date;
   messageCount: number;
@@ -19,7 +18,7 @@ export interface MessageChunk {
  */
 export function chunkMessages(
   messages: Message[],
-  chunkSize: number = 7,
+  chunkSize: number = 10,
   overlap: number = 2,
 ): MessageChunk[] {
   const chunks: MessageChunk[] = [];
@@ -30,7 +29,6 @@ export function chunkMessages(
     const chunkMessages = messages.slice(i, i + chunkSize);
     if (chunkMessages.length === 0) break;
 
-    const senders = [...new Set(chunkMessages.map((m) => m.from))];
     const content =
       header +
       "\n" +
@@ -38,7 +36,6 @@ export function chunkMessages(
 
     chunks.push({
       content,
-      sender: senders.length === 1 ? senders[0] : "mixed",
       startTimestamp: new Date(chunkMessages[0].date),
       endTimestamp: new Date(chunkMessages[chunkMessages.length - 1].date),
       messageCount: chunkMessages.length,

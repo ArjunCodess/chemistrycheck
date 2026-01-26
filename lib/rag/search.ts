@@ -4,7 +4,6 @@ import { generateEmbedding } from "./embedding";
 
 export interface SearchResult {
   content: string;
-  sender: string;
   similarity: number;
   startTimestamp: Date | null;
 }
@@ -27,7 +26,6 @@ export async function findRelevantMessages(
   const results = await db
     .select({
       content: messageEmbeddings.chunkContent,
-      sender: messageEmbeddings.sender,
       startTimestamp: messageEmbeddings.startTimestamp,
       similarity,
     })

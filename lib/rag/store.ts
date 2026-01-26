@@ -17,7 +17,6 @@ export async function embedAndStoreMessages(
     await db.insert(messageEmbeddings).values({
       analysisId,
       chunkContent: chunk.content,
-      sender: chunk.sender,
       chunkIndex: chunk.chunkIndex,
       startTimestamp: chunk.startTimestamp,
       endTimestamp: chunk.endTimestamp,
