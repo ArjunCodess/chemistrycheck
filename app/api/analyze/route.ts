@@ -7,6 +7,7 @@ import { chatAnalysis, user, session as sessionTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { embedAndStoreMessages } from "@/lib/rag";
+import { del } from "@vercel/blob";
 
 export async function POST(request: NextRequest) {
   try {
@@ -231,6 +232,17 @@ export async function POST(request: NextRequest) {
               console.log("Embedding completed successfully");
             } catch (embedError) {
               console.error("Error generating embeddings:", embedError);
+            }
+          }
+
+          // Delete the blob after successful processing
+          if (blobUrl) {
+            try {
+              console.log("Deleting blob file:", blobUrl);
+              await del(blobUrl);
+              console.log("Blob file deleted successfully");
+            } catch (delError) {
+              console.error("Error deleting blob file:", delError);
             }
           }
 
