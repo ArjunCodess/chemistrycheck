@@ -1,4 +1,5 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { generateText } from "ai";
+import { google } from "@ai-sdk/google";
 import {
   ChatStats,
   RelationshipHealthScore,
@@ -7,21 +8,6 @@ import {
   AttachmentStyle,
   MatchPercentage,
 } from "@/types";
-
-const genAI = new GoogleGenerativeAI(
-  process.env.GOOGLE_GENERATIVE_AI_API_KEY || "",
-);
-
-const model = genAI.getGenerativeModel({
-  model: "gemini-3-flash-preview",
-});
-
-const generationConfig = {
-  temperature: 0.2,
-  topP: 0.95,
-  topK: 40,
-  maxOutputTokens: 5000,
-};
 
 export async function generateAIInsights(
   stats: ChatStats,
@@ -186,12 +172,12 @@ export async function generateAIInsights(
       }
     `;
 
-    const chatSession = model.startChat({
-      generationConfig,
+    const { text: responseText } = await generateText({
+      model: google("gemini-3-flash-preview"),
+      prompt: prompt,
+      temperature: 0.2,
+      topP: 0.95,
     });
-
-    const result = await chatSession.sendMessage(prompt);
-    const responseText = result.response.text();
 
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     let jsonString = jsonMatch ? jsonMatch[0] : responseText;
