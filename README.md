@@ -60,18 +60,14 @@ Want to run ChemistryCheck locally? Here's what you need to do.
    Create a `.env` file in the root directory with the following variables:
 
    ```env
-   # Database
-   DATABASE_URL=your_postgresql_connection_string
-
-   # Application
+   GOOGLE_GENERATIVE_AI_API_KEY=
+   BLOB_READ_WRITE_TOKEN=
    APP_URL=http://localhost:3000
-
-   # AI (Google Gemini)
-   GOOGLE_GENERATIVE_AI_API_KEY=your_GOOGLE_GENERATIVE_AI_API_KEY
-
-   # Authentication (Google OAuth)
-   GOOGLE_CLIENT_ID=your_google_client_id
-   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   BETTER_AUTH_URL=http://localhost:3000
+   BETTER_AUTH_SECRET=
+   DATABASE_URL=
+   GOOGLE_CLIENT_ID=
+   GOOGLE_CLIENT_SECRET=
    ```
 
 4. **Set up the database**
@@ -196,11 +192,14 @@ This application is set up to deploy on Vercel.
 
 2. **Environment Variables You Need**
    ```env
-   DATABASE_URL=your_postgresql_connection_string
+   GOOGLE_GENERATIVE_AI_API_KEY=
+   BLOB_READ_WRITE_TOKEN=
    APP_URL=https://your-domain.vercel.app
-   GOOGLE_GENERATIVE_AI_API_KEY=your_GOOGLE_GENERATIVE_AI_API_KEY
-   GOOGLE_CLIENT_ID=your_google_client_id
-   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   BETTER_AUTH_URL=https://your-domain.vercel.app
+   BETTER_AUTH_SECRET=
+   DATABASE_URL=
+   GOOGLE_CLIENT_ID=
+   GOOGLE_CLIENT_SECRET=
    ```
 
 3. **Database Setup**
