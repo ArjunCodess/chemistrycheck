@@ -96,7 +96,9 @@ The application should be running at `http://localhost:3000`.
    - Support for WhatsApp (.txt), Telegram (.json), and Instagram (.json) chat exports
    - Secure file upload using Vercel Blob storage
    - Automatic platform detection and parsing
-   - **Privacy-first**: Chat files are deleted from storage immediately after analysis is complete. The project is fully open source for transparency.
+   - Changed your mind? Delete your uploaded file instantly before analysis starts
+   - Clear transparency about how your data is handled—shown right after upload
+   - Chat files are deleted from storage immediately after analysis is complete. The project is fully open source for transparency.
 
 2. **AI-Powered Analysis**
    - Analyzes message patterns, response times, word frequency, and emoji usage
@@ -106,6 +108,7 @@ The application should be running at `http://localhost:3000`.
 
 3. **Comprehensive Dashboard**
    - View all your analyses in one place
+   - Visual identification of WhatsApp, Telegram, and Instagram analyses with colored platform icons
    - Detailed statistics and visualizations
    - Activity patterns (messages by hour, day, month)
    - Response time analysis
