@@ -3,13 +3,13 @@ import type { SVGProps } from "react";
 const Telegram = (props: SVGProps<SVGSVGElement>) => (
   <svg {...props} viewBox="0 0 256 256" preserveAspectRatio="xMidYMid">
     <defs>
-      <linearGradient id="a" x1="50%" x2="50%" y1="0%" y2="100%">
+      <linearGradient id="telegram__a" x1="50%" x2="50%" y1="0%" y2="100%">
         <stop offset="0%" stopColor="#2AABEE" />
         <stop offset="100%" stopColor="#229ED9" />
       </linearGradient>
     </defs>
     <path
-      fill="url(#a)"
+      fill="url(#telegram__a)"
       d="M128 0C94.06 0 61.48 13.494 37.5 37.49A128.038 128.038 0 0 0 0 128c0 33.934 13.5 66.514 37.5 90.51C61.48 242.506 94.06 256 128 256s66.52-13.494 90.5-37.49c24-23.996 37.5-56.576 37.5-90.51 0-33.934-13.5-66.514-37.5-90.51C194.52 13.494 161.94 0 128 0Z"
     />
     <path
