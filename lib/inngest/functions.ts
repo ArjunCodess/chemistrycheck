@@ -3,7 +3,7 @@ import { db } from "@/db";
 import { chatAnalysis } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { embedAndStoreMessages, deleteEmbeddings } from "@/lib/rag";
-import { del } from "@vercel/blob";
+import { deleteBlob } from "@/actions/blob";
 
 // Import parsers
 import { parseChatData as parseTelegramChatData } from "@/lib/chat-parser/telegram";
@@ -112,8 +112,12 @@ export const processAnalysis = inngest.createFunction(
     // Step 6: Clean up blob storage
     await step.run("cleanup-blob", async () => {
       try {
-        await del(blobUrl);
-        console.log(`Deleted blob: ${blobUrl}`);
+        const result = await deleteBlob(blobUrl);
+        if (result.success) {
+          console.log(`Deleted blob: ${blobUrl}`);
+        } else {
+          console.error("Error deleting blob:", result.error);
+        }
       } catch (error) {
         console.error("Error deleting blob:", error);
         // Don't fail the job for cleanup errors
