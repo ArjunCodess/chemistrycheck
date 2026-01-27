@@ -104,7 +104,11 @@ export function ChatAnalyzerForm() {
         platform={platform}
         setPlatform={setPlatform as (p: Platform) => void}
       />
-      <FileUpload onBlobUploaded={handleBlobUploaded} />
+      <FileUpload
+        onBlobUploaded={handleBlobUploaded}
+        blobUrl={blobUrl}
+        onBlobDeleted={() => setBlobUrl(null)}
+      />
       <Button
         type="submit"
         disabled={!blobUrl || !platform || isLoading || !session}
