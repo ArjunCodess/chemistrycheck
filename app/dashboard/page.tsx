@@ -15,6 +15,9 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
 import { MessageCircle, Users, AlertCircle, Trash2 } from "lucide-react";
+import { Whatsapp } from "@/components/ui/svgs/whatsapp";
+import { Telegram } from "@/components/ui/svgs/telegram";
+import { Instagram } from "@/components/ui/svgs/instagram";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -192,7 +195,12 @@ export default function DashboardPage() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          {analysis.platform.charAt(0).toUpperCase() + analysis.platform.slice(1)}
+                          <div className="flex items-center gap-2">
+                            {analysis.platform === "whatsapp" && <Whatsapp className="h-4 w-4" />}
+                            {analysis.platform === "telegram" && <Telegram className="h-4 w-4" />}
+                            {analysis.platform === "instagram" && <Instagram className="h-4 w-4" />}
+                            <span>{analysis.platform.charAt(0).toUpperCase() + analysis.platform.slice(1)}</span>
+                          </div>
                         </TableCell>
                         <TableCell>{formatDate(analysis.createdAt)}</TableCell>
                         <TableCell>
