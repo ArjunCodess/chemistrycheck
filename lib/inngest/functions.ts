@@ -18,6 +18,37 @@ export const processAnalysis = inngest.createFunction(
   {
     id: "process-analysis",
     retries: 3,
+    onFailure: async ({ event, error }) => {
+      // This runs after all retries are exhausted
+      const { analysisId, blobUrl } = event.data.event.data;
+      console.error(
+        `Analysis ${analysisId} failed permanently:`,
+        error.message,
+      );
+
+      // Update status to failed in the database
+      try {
+        await db
+          .update(chatAnalysis)
+          .set({ jobStatus: "failed" })
+          .where(eq(chatAnalysis.id, analysisId));
+        console.log(`Marked analysis ${analysisId} as failed in database`);
+      } catch (dbError) {
+        console.error(`Failed to update analysis status:`, dbError);
+      }
+
+      // Clean up blob storage even on failure
+      try {
+        const result = await deleteBlob(blobUrl);
+        if (result.success) {
+          console.log(`Deleted blob after failure: ${blobUrl}`);
+        } else {
+          console.error("Error deleting blob after failure:", result.error);
+        }
+      } catch (blobError) {
+        console.error("Error deleting blob after failure:", blobError);
+      }
+    },
   },
   { event: "analysis.created" },
   async ({ event, step }) => {
