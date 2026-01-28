@@ -92,7 +92,7 @@ export const messageEmbeddings = pgTable(
     startTimestamp: timestamp("start_timestamp"),
     endTimestamp: timestamp("end_timestamp"),
     messageCount: integer("message_count").notNull(),
-    embedding: vector("embedding", { dimensions: 768 }).notNull(),
+    embedding: vector("embedding", { dimensions: 1536 }).notNull(),
     createdAt: timestamp("created_at").defaultNow(),
   },
   (table) => [

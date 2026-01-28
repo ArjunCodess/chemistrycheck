@@ -36,7 +36,7 @@ CREATE TABLE "message_embeddings" (
 	"start_timestamp" timestamp,
 	"end_timestamp" timestamp,
 	"message_count" integer NOT NULL,
-	"embedding" vector(768) NOT NULL,
+	"embedding" vector(1536) NOT NULL,
 	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
