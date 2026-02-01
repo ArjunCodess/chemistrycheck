@@ -43,7 +43,7 @@ Want to run ChemistryCheck locally? Here's what you need to do.
 1. **Grab the code**
 
    ```bash
-   git clone https://github.com/your-username/chemistrycheck.git
+   git clone https://github.com/ArjunCodess/chemistrycheck.git
    cd chemistrycheck
    ```
 
