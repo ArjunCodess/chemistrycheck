@@ -116,13 +116,21 @@ The application should be running at `http://localhost:3000`.
    - Emoji analysis
    - AI-generated insights and summaries
 
-4. **RAG Chatbot** 🆕
+4. **RAG Chatbot**
    - Chat with an AI that has full context of your conversation
    - Ask questions like "When did we first say I love you?" or "Find messages about our trip"
    - Semantic search powered by pgvector embeddings
    - Owner-only access (hidden on public/shared links)
 
-5. **Shareable Analysis**
+5. **Scorecard Generator**
+   - Create beautiful, shareable scorecards summarizing your chat analysis
+   - Multiple themes: Light, Dark, Rose Gradient, Ocean, Sunset, Purple
+   - Customizable metrics: Chemistry Score, Messages, Reply Time, Balance, Interest Levels, Top Emojis, Attachment Styles, Health Score, Red Flags
+   - Privacy options: Blur names, use initials, custom nicknames, or hide names entirely
+   - Export as PNG, JPEG, or copy to clipboard
+   - Perfect for sharing on social media
+
+6. **Shareable Analysis**
    - Make analyses public and shareable
    - View detailed breakdowns of communication patterns
 
@@ -169,6 +177,7 @@ The analysis includes everything from basic message counts to advanced AI insigh
 - **Next Themes** for dark/light mode support
 - **Recharts** for data visualization
 - **React D3 Cloud** for word cloud visualizations
+- **html-to-image** for scorecard export functionality
 
 ### Storage & Deployment
 
