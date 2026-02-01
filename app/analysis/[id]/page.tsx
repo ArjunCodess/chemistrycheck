@@ -38,6 +38,7 @@ import { Media } from "@/components/dashboard/media";
 import { EmojiAnalysis } from "@/components/dashboard/emoji-analysis";
 import { AIInsights } from "@/components/dashboard/ai-insights";
 import { TLDR } from "@/components/dashboard/tldr";
+import { Scorecard } from "@/components/dashboard/scorecard";
 import { authClient } from "@/lib/auth-client";
 import { Input } from "@/components/ui/input";
 
@@ -529,6 +530,9 @@ export default function AnalysisDashboard() {
             <TabsTrigger value="media">Media</TabsTrigger>
             <TabsTrigger value="emoji">Emoji Analysis</TabsTrigger>
             <TabsTrigger value="ai">AI Insights</TabsTrigger>
+            {session && session.user && analysisDetails?.userId === session.user.id && (
+              <TabsTrigger value="scorecard">Scorecard</TabsTrigger>
+            )}
           </TabsList>
 
           <div className="px-1 overflow-hidden h-full">
@@ -580,6 +584,17 @@ export default function AnalysisDashboard() {
                 />
               </Suspense>
             </TabsContent>
+
+            {session && session.user && analysisDetails?.userId === session.user.id && (
+              <TabsContent value="scorecard" className="mt-0 overflow-x-auto">
+                <Suspense fallback={<TabLoadingFallback />}>
+                  <Scorecard
+                    stats={safeStats}
+                    analysisName={analysisDetails?.name}
+                  />
+                </Suspense>
+              </TabsContent>
+            )}
           </div>
         </Tabs>
       </div>
@@ -605,7 +620,9 @@ export default function AnalysisDashboard() {
                           ? "Emoji Analysis"
                           : activeTab === "ai"
                             ? "AI Insights"
-                            : "Activity Patterns"}
+                            : activeTab === "scorecard"
+                              ? "Scorecard"
+                              : "Activity Patterns"}
               </span>
               <Menu className="h-4 w-4" />
             </Button>
@@ -683,6 +700,18 @@ export default function AnalysisDashboard() {
               >
                 AI Insights
               </Button>
+              {session && session.user && analysisDetails?.userId === session.user.id && (
+                <Button
+                  variant={activeTab === "scorecard" ? "default" : "ghost"}
+                  onClick={() => {
+                    setActiveTab("scorecard");
+                    setDrawerOpen(false);
+                  }}
+                  className="justify-start"
+                >
+                  Scorecard
+                </Button>
+              )}
             </div>
           </DrawerContent>
         </Drawer>
@@ -742,6 +771,16 @@ export default function AnalysisDashboard() {
               <AIInsights
                 stats={safeStats}
                 onUploadNewChat={handleUploadNewChat}
+              />
+            </div>
+          </Suspense>
+        )}
+        {activeTab === "scorecard" && session && session.user && analysisDetails?.userId === session.user.id && (
+          <Suspense fallback={<TabLoadingFallback />}>
+            <div className="overflow-x-auto">
+              <Scorecard
+                stats={safeStats}
+                analysisName={analysisDetails?.name}
               />
             </div>
           </Suspense>
