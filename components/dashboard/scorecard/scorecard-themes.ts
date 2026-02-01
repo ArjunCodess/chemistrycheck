@@ -1,0 +1,81 @@
+import { ScorecardTheme, ThemeId } from "./types";
+
+export const SCORECARD_THEMES: Record<ThemeId, ScorecardTheme> = {
+  light: {
+    id: "light",
+    name: "Light",
+    background: "bg-gradient-to-br from-neutral-50 to-neutral-100",
+    cardBg: "bg-white",
+    primaryText: "text-neutral-900",
+    secondaryText: "text-neutral-600",
+    accent: "text-pink-500",
+    metricCardBg: "bg-neutral-50",
+    metricCardText: "text-neutral-800",
+    metricCardAccent: "text-pink-600",
+  },
+  dark: {
+    id: "dark",
+    name: "Dark",
+    background: "bg-gradient-to-br from-neutral-900 to-neutral-800",
+    cardBg: "bg-neutral-800/80",
+    primaryText: "text-white",
+    secondaryText: "text-neutral-300",
+    accent: "text-pink-400",
+    metricCardBg: "bg-neutral-700/50",
+    metricCardText: "text-neutral-100",
+    metricCardAccent: "text-pink-400",
+  },
+  rose: {
+    id: "rose",
+    name: "Rose Gradient",
+    background: "bg-gradient-to-br from-rose-400 via-pink-500 to-purple-600",
+    cardBg: "bg-white/90 backdrop-blur-sm",
+    primaryText: "text-neutral-900",
+    secondaryText: "text-neutral-600",
+    accent: "text-pink-600",
+    metricCardBg: "bg-pink-50",
+    metricCardText: "text-pink-900",
+    metricCardAccent: "text-pink-600",
+  },
+  ocean: {
+    id: "ocean",
+    name: "Ocean Gradient",
+    background: "bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600",
+    cardBg: "bg-white/90 backdrop-blur-sm",
+    primaryText: "text-neutral-900",
+    secondaryText: "text-neutral-600",
+    accent: "text-blue-600",
+    metricCardBg: "bg-blue-50",
+    metricCardText: "text-blue-900",
+    metricCardAccent: "text-blue-600",
+  },
+  sunset: {
+    id: "sunset",
+    name: "Sunset Gradient",
+    background: "bg-gradient-to-br from-orange-400 via-red-500 to-pink-600",
+    cardBg: "bg-white/90 backdrop-blur-sm",
+    primaryText: "text-neutral-900",
+    secondaryText: "text-neutral-600",
+    accent: "text-orange-600",
+    metricCardBg: "bg-orange-50",
+    metricCardText: "text-orange-900",
+    metricCardAccent: "text-orange-600",
+  },
+  purple: {
+    id: "purple",
+    name: "Purple Gradient",
+    background:
+      "bg-gradient-to-br from-violet-400 via-purple-500 to-fuchsia-600",
+    cardBg: "bg-white/90 backdrop-blur-sm",
+    primaryText: "text-neutral-900",
+    secondaryText: "text-neutral-600",
+    accent: "text-purple-600",
+    metricCardBg: "bg-purple-50",
+    metricCardText: "text-purple-900",
+    metricCardAccent: "text-purple-600",
+  },
+};
+
+export const getTheme = (themeId: ThemeId): ScorecardTheme => {
+  return SCORECARD_THEMES[themeId] || SCORECARD_THEMES.rose;
+};
