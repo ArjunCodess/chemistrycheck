@@ -94,18 +94,39 @@ export const ScorecardPreview = forwardRef<HTMLDivElement, ScorecardPreviewProps
     return (
       <div
         ref={ref}
-        className={`${theme.background} p-6 rounded-3xl`}
+        className={`${theme.background} w-full flex flex-col`}
+        style={{
+          padding: "5%",
+          fontSize: "clamp(8px, 1.5vw, 14px)",
+          borderRadius: "2em",
+        }}
       >
         {/* Header with Chemistry Score */}
         {settings.metrics.chemistryScore && (
-          <div className={`${theme.cardBg} rounded-3xl p-6 text-center shadow-sm mb-4 flex flex-col justify-center`}>
-            <div className={`text-sm font-medium ${theme.secondaryText} uppercase tracking-wider mb-2`}>
+          <div
+            className={`${theme.cardBg} text-center shadow-sm flex flex-col justify-center`}
+            style={{
+              padding: "5%",
+              marginBottom: "3%",
+              borderRadius: "1.5em",
+            }}
+          >
+            <div
+              className={`font-medium ${theme.secondaryText} uppercase tracking-wider`}
+              style={{ fontSize: "1em", marginBottom: "0.5em" }}
+            >
               Chemistry Score
             </div>
-            <div className={`text-6xl md:text-7xl font-bold ${theme.accent}`}>
+            <div
+              className={`font-bold ${theme.accent}`}
+              style={{ fontSize: "5em", lineHeight: 1 }}
+            >
               {chemistryScore}%
             </div>
-            <div className="flex justify-center gap-1 mt-3 text-2xl">
+            <div
+              className="flex justify-center"
+              style={{ marginTop: "0.75em", fontSize: "1.8em", gap: "0.2em" }}
+            >
               {[...Array(5)].map((_, i) => (
                 <span
                   key={i}
@@ -116,7 +137,8 @@ export const ScorecardPreview = forwardRef<HTMLDivElement, ScorecardPreviewProps
               ))}
             </div>
             <div
-              className={`mt-3 text-lg ${theme.primaryText} ${settings.blurNames ? "blur-sm" : ""}`}
+              className={`${theme.primaryText} ${settings.blurNames ? "blur-sm" : ""}`}
+              style={{ marginTop: "0.75em", fontSize: "1.25em" }}
             >
               {userNames.map((name, i) => (
                 <span key={name}>
@@ -129,14 +151,26 @@ export const ScorecardPreview = forwardRef<HTMLDivElement, ScorecardPreviewProps
         )}
 
         {/* Metrics Grid */}
-        <div className="grid grid-cols-2 gap-3">
+        <div
+          className="grid grid-cols-2"
+          style={{ gap: "2.5%" }}
+        >
           {/* Total Messages */}
           {settings.metrics.totalMessages && (
-            <div className={`${theme.metricCardBg} rounded-2xl p-4 shadow-sm flex flex-col justify-center min-h-[80px]`}>
-              <div className={`text-xs font-medium ${theme.metricCardText} uppercase tracking-wider mb-1`}>
+            <div
+              className={`${theme.metricCardBg} shadow-sm flex flex-col justify-center`}
+              style={{ padding: "4%", borderRadius: "1em" }}
+            >
+              <div
+                className={`font-medium ${theme.metricCardText} uppercase tracking-wider`}
+                style={{ fontSize: "0.85em", marginBottom: "0.25em" }}
+              >
                 Messages
               </div>
-              <div className={`text-3xl font-bold ${theme.metricCardAccent}`}>
+              <div
+                className={`font-bold ${theme.metricCardAccent}`}
+                style={{ fontSize: "2.5em" }}
+              >
                 {formatNumber(totalMessages)}
               </div>
             </div>
@@ -144,17 +178,29 @@ export const ScorecardPreview = forwardRef<HTMLDivElement, ScorecardPreviewProps
 
           {/* Response Time Per User */}
           {settings.metrics.responseTimePerUser && (
-            <div className={`${theme.metricCardBg} rounded-2xl p-4 shadow-sm flex flex-col justify-center min-h-[80px]`}>
-              <div className={`text-xs font-medium ${theme.metricCardText} uppercase tracking-wider mb-2`}>
+            <div
+              className={`${theme.metricCardBg} shadow-sm flex flex-col justify-center`}
+              style={{ padding: "4%", borderRadius: "1em" }}
+            >
+              <div
+                className={`font-medium ${theme.metricCardText} uppercase tracking-wider`}
+                style={{ fontSize: "0.85em", marginBottom: "0.5em" }}
+              >
                 Reply Time
               </div>
               <div className="flex justify-around">
                 {userNames.map((name, i) => (
                   <div key={name} className="text-center">
-                    <div className={`text-xs ${theme.metricCardText} mb-1 ${settings.blurNames ? "blur-sm" : ""}`}>
+                    <div
+                      className={`${theme.metricCardText} ${settings.blurNames ? "blur-sm" : ""}`}
+                      style={{ fontSize: "0.75em", marginBottom: "0.25em" }}
+                    >
                       {getDisplayName(name, settings)}
                     </div>
-                    <div className={`text-lg font-bold ${theme.metricCardAccent}`}>
+                    <div
+                      className={`font-bold ${theme.metricCardAccent}`}
+                      style={{ fontSize: "1.5em" }}
+                    >
                       {formatTime(avgReplyTimes[i])}
                     </div>
                   </div>
@@ -165,17 +211,29 @@ export const ScorecardPreview = forwardRef<HTMLDivElement, ScorecardPreviewProps
 
           {/* Balance Score */}
           {settings.metrics.balanceScore && (
-            <div className={`${theme.metricCardBg} rounded-2xl p-4 shadow-sm flex flex-col justify-center min-h-[80px]`}>
-              <div className={`text-xs font-medium ${theme.metricCardText} uppercase tracking-wider mb-2`}>
+            <div
+              className={`${theme.metricCardBg} shadow-sm flex flex-col justify-center`}
+              style={{ padding: "4%", borderRadius: "1em" }}
+            >
+              <div
+                className={`font-medium ${theme.metricCardText} uppercase tracking-wider`}
+                style={{ fontSize: "0.85em", marginBottom: "0.5em" }}
+              >
                 Balance
               </div>
               <div className="flex justify-around">
                 {userNames.map((name, i) => (
                   <div key={name} className="text-center">
-                    <div className={`text-xs ${theme.metricCardText} mb-1 ${settings.blurNames ? "blur-sm" : ""}`}>
+                    <div
+                      className={`${theme.metricCardText} ${settings.blurNames ? "blur-sm" : ""}`}
+                      style={{ fontSize: "0.75em", marginBottom: "0.25em" }}
+                    >
                       {getDisplayName(name, settings)}
                     </div>
-                    <div className={`text-xl font-bold ${theme.metricCardAccent}`}>
+                    <div
+                      className={`font-bold ${theme.metricCardAccent}`}
+                      style={{ fontSize: "1.75em" }}
+                    >
                       {balancePercentages[i]}%
                     </div>
                   </div>
@@ -186,17 +244,29 @@ export const ScorecardPreview = forwardRef<HTMLDivElement, ScorecardPreviewProps
 
           {/* Interest Levels */}
           {settings.metrics.interestLevels && interestLevels.length > 0 && (
-            <div className={`${theme.metricCardBg} rounded-2xl p-4 shadow-sm flex flex-col justify-center min-h-[80px]`}>
-              <div className={`text-xs font-medium ${theme.metricCardText} uppercase tracking-wider mb-2`}>
+            <div
+              className={`${theme.metricCardBg} shadow-sm flex flex-col justify-center`}
+              style={{ padding: "4%", borderRadius: "1em" }}
+            >
+              <div
+                className={`font-medium ${theme.metricCardText} uppercase tracking-wider`}
+                style={{ fontSize: "0.85em", marginBottom: "0.5em" }}
+              >
                 Interest
               </div>
               <div className="flex justify-around">
                 {userNames.map((name, i) => (
                   <div key={name} className="text-center">
-                    <div className={`text-xs ${theme.metricCardText} mb-1 ${settings.blurNames ? "blur-sm" : ""}`}>
+                    <div
+                      className={`${theme.metricCardText} ${settings.blurNames ? "blur-sm" : ""}`}
+                      style={{ fontSize: "0.75em", marginBottom: "0.25em" }}
+                    >
                       {getDisplayName(name, settings)}
                     </div>
-                    <div className={`text-xl font-bold ${theme.metricCardAccent}`}>
+                    <div
+                      className={`font-bold ${theme.metricCardAccent}`}
+                      style={{ fontSize: "1.75em" }}
+                    >
                       {interestLevels[i]}%
                     </div>
                   </div>
@@ -207,11 +277,20 @@ export const ScorecardPreview = forwardRef<HTMLDivElement, ScorecardPreviewProps
 
           {/* Top Emojis */}
           {settings.metrics.topEmojis && topEmojis.length > 0 && (
-            <div className={`${theme.metricCardBg} rounded-2xl p-4 shadow-sm flex flex-col justify-center min-h-[80px]`}>
-              <div className={`text-xs font-medium ${theme.metricCardText} uppercase tracking-wider mb-2`}>
+            <div
+              className={`${theme.metricCardBg} shadow-sm flex flex-col justify-center`}
+              style={{ padding: "4%", borderRadius: "1em" }}
+            >
+              <div
+                className={`font-medium ${theme.metricCardText} uppercase tracking-wider`}
+                style={{ fontSize: "0.85em", marginBottom: "0.5em" }}
+              >
                 Top Emojis
               </div>
-              <div className="text-2xl text-center flex justify-center gap-1">
+              <div
+                className="text-center flex justify-center"
+                style={{ fontSize: "1.8em", gap: "0.2em" }}
+              >
                 {topEmojis.map((emoji, i) => (
                   <span key={i}>{emoji}</span>
                 ))}
@@ -221,8 +300,14 @@ export const ScorecardPreview = forwardRef<HTMLDivElement, ScorecardPreviewProps
 
           {/* Attachment Styles */}
           {settings.metrics.attachmentStyles && Object.keys(attachmentStyles).length > 0 && (
-            <div className={`${theme.metricCardBg} rounded-2xl p-4 shadow-sm flex flex-col justify-center min-h-[80px]`}>
-              <div className={`text-xs font-medium ${theme.metricCardText} uppercase tracking-wider mb-2`}>
+            <div
+              className={`${theme.metricCardBg} shadow-sm flex flex-col justify-center`}
+              style={{ padding: "4%", borderRadius: "1em" }}
+            >
+              <div
+                className={`font-medium ${theme.metricCardText} uppercase tracking-wider`}
+                style={{ fontSize: "0.85em", marginBottom: "0.5em" }}
+              >
                 Attachment
               </div>
               <div className="flex justify-around">
@@ -231,10 +316,16 @@ export const ScorecardPreview = forwardRef<HTMLDivElement, ScorecardPreviewProps
                   if (!style) return null;
                   return (
                     <div key={name} className="text-center">
-                      <div className={`text-xs ${theme.metricCardText} mb-1 ${settings.blurNames ? "blur-sm" : ""}`}>
+                      <div
+                        className={`${theme.metricCardText} ${settings.blurNames ? "blur-sm" : ""}`}
+                        style={{ fontSize: "0.75em", marginBottom: "0.25em" }}
+                      >
                         {getDisplayName(name, settings)}
                       </div>
-                      <div className={`text-sm font-bold ${theme.metricCardAccent}`}>
+                      <div
+                        className={`font-bold ${theme.metricCardAccent}`}
+                        style={{ fontSize: "1em" }}
+                      >
                         {style.primaryStyle}
                       </div>
                     </div>
@@ -246,11 +337,20 @@ export const ScorecardPreview = forwardRef<HTMLDivElement, ScorecardPreviewProps
 
           {/* Relationship Health */}
           {settings.metrics.relationshipHealth && healthScore > 0 && (
-            <div className={`${theme.metricCardBg} rounded-2xl p-4 shadow-sm flex flex-col justify-center min-h-[80px]`}>
-              <div className={`text-xs font-medium ${theme.metricCardText} uppercase tracking-wider mb-1`}>
+            <div
+              className={`${theme.metricCardBg} shadow-sm flex flex-col justify-center`}
+              style={{ padding: "4%", borderRadius: "1em" }}
+            >
+              <div
+                className={`font-medium ${theme.metricCardText} uppercase tracking-wider`}
+                style={{ fontSize: "0.85em", marginBottom: "0.25em" }}
+              >
                 Health
               </div>
-              <div className={`text-3xl font-bold ${theme.metricCardAccent}`}>
+              <div
+                className={`font-bold ${theme.metricCardAccent}`}
+                style={{ fontSize: "2.5em" }}
+              >
                 {healthScore}/100
               </div>
             </div>
@@ -258,11 +358,20 @@ export const ScorecardPreview = forwardRef<HTMLDivElement, ScorecardPreviewProps
 
           {/* Red Flags */}
           {settings.metrics.redFlags && (
-            <div className={`${theme.metricCardBg} rounded-2xl p-4 shadow-sm flex flex-col justify-center min-h-[80px]`}>
-              <div className={`text-xs font-medium ${theme.metricCardText} uppercase tracking-wider mb-1`}>
+            <div
+              className={`${theme.metricCardBg} shadow-sm flex flex-col justify-center`}
+              style={{ padding: "4%", borderRadius: "1em" }}
+            >
+              <div
+                className={`font-medium ${theme.metricCardText} uppercase tracking-wider`}
+                style={{ fontSize: "0.85em", marginBottom: "0.25em" }}
+              >
                 Red Flags
               </div>
-              <div className={`text-2xl font-bold ${theme.metricCardAccent}`}>
+              <div
+                className={`font-bold ${theme.metricCardAccent}`}
+                style={{ fontSize: "2em" }}
+              >
                 {redFlagsCount === 0 ? "✓ None" : `${redFlagsCount} found`}
               </div>
             </div>
@@ -270,7 +379,16 @@ export const ScorecardPreview = forwardRef<HTMLDivElement, ScorecardPreviewProps
         </div>
 
         {/* Footer - Branding */}
-        <div className={`text-center mt-4 text-sm drop-shadow-sm ${settings.theme === "light" ? "text-neutral-600" : "text-white/90"}`}>
+        <div
+          className={`text-center drop-shadow-sm ${settings.theme === "light" ? "text-neutral-600" : "text-white/90"}`}
+          style={{
+            marginTop: "2em",
+            paddingTop: "2em",
+            fontSize: "1em",
+            position: "relative",
+            zIndex: 10,
+          }}
+        >
           💕 chemistrycheck.vercel.app
         </div>
       </div>
