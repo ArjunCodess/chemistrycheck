@@ -80,15 +80,21 @@ export async function generateAIInsights(
          - List of incompatibilities/reasons they might not be suitable (at least 3 points)
          - Confidence level of this assessment (0-100)
       
+      CRITICAL NAME RULES (MUST FOLLOW - NO EXCEPTIONS):
+      The ONLY valid participant names are the exact keys from the "messagesByUser" object below: ${JSON.stringify(Object.keys(stats.messagesByUser || {}))}
+      - You MUST use these exact names everywhere in your response (summary, JSON keys, descriptions, cookedStatus user field, etc.).
+      - DO NOT use any other name, nickname, or alias that appears inside the message text/content. A name mentioned frequently WITHIN messages is NOT the sender's name — it could be a third party, a pet name, or something else entirely.
+      - DO NOT invent names, shorten names, or substitute names. Use the exact strings listed above, character for character.
+      - The "from" field in the sample messages below tells you who sent each message. That "from" value is the participant's true identity. The text content of the message is what they said — names appearing inside that text are NOT sender identities.
+      - If a message's text contains a different name prominently (e.g., someone addressing a friend by a nickname), that does NOT override the "from" field. Always trust "from" over any name in the message body.
+      
       Chat Statistics:
       ${JSON.stringify(chatSummary, null, 2)}
       
       Sample Messages:
       ${JSON.stringify(sampleMessages, null, 2)}
       
-      IMPORTANT: IN YOUR RESPONSE, USE THE ACTUAL NAMES FROM THE MESSAGES INSTEAD OF "USER1" OR "USER2".
-      
-      Respond in the following JSON format only:
+      Respond in the following JSON format only (use the EXACT participant names listed above as JSON keys, NOT "User1"/"User2"):
       {
         "aiSummary": "detailed 3-4 paragraph summary of chat dynamics",
         "relationshipHealthScore": {
