@@ -28,8 +28,5 @@ export const auth = betterAuth({
       },
     },
   },
-  cookies: {
-    useSecureCookies: process.env.NODE_ENV === "production",
-  },
   plugins: [nextCookies()],
 });
