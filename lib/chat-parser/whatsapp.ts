@@ -63,23 +63,18 @@ export async function parseChatData(rawText: string): Promise<{
     matchPercentage: undefined,
   };
 
-  console.log("Starting to parse WhatsApp chat data...");
+  console.log("[whatsapp] Parsing started");
 
   try {
     if (!rawText || typeof rawText !== "string") {
-      console.error("Invalid WhatsApp chat data format - expected a string");
+      console.error("[whatsapp] Invalid data format - expected a string");
       return { stats, messages: [] };
     }
 
     // Parse raw text into messages
     const messages = parseWhatsAppText(rawText);
-    console.log(`Parsed ${messages.length} messages from WhatsApp chat`);
-
     // Filter out system messages from statistical analysis
     const userMessages = messages.filter((message) => !message.isSystemMessage);
-    console.log(
-      `Found ${userMessages.length} user messages and ${messages.length - userMessages.length} system messages`,
-    );
 
     // Initialize time-based pattern tracking
     // Initialize hours (0-23)
@@ -108,9 +103,10 @@ export async function parseChatData(rawText: string): Promise<{
     const wordFrequencyByUser: Record<string, Record<string, number>> = {};
 
     // Process each message - now use userMessages instead of all messages
-    userMessages.forEach((message, index) => {
+    let skippedCount = 0;
+    userMessages.forEach((message) => {
       if (!message.sender) {
-        console.log(`Skipping message with unknown sender at index ${index}`);
+        skippedCount++;
         return;
       }
 
@@ -144,8 +140,8 @@ export async function parseChatData(rawText: string): Promise<{
             month: "long",
           });
           monthsMap.set(monthName, (monthsMap.get(monthName) || 0) + 1);
-        } catch (error) {
-          console.error("Error processing message date:", error);
+        } catch {
+          // Skip invalid dates silently
         }
       }
 
@@ -333,34 +329,9 @@ export async function parseChatData(rawText: string): Promise<{
     // Calculate response statistics and gap analysis
     calculateResponsesAndGaps(userMessages, stats);
 
-    console.log("WhatsApp chat parsing completed with:", {
-      totalMessages: stats.totalMessages,
-      messagesByUser: stats.messagesByUser,
-      totalWords: stats.totalWords,
-      wordsByUser: stats.wordsByUser,
-    });
-
-    // Add info about the WhatsApp Group
-    try {
-      // Extract group info from the first few system messages if available
-      const systemMessages = messages.filter(
-        (message) => message.isSystemMessage,
-      );
-      if (systemMessages.length > 0) {
-        // Group information is often in first system message
-        const groupInfoMessage = systemMessages[0];
-        // We could extract group information here but we're just logging for now
-        console.log(
-          `WhatsApp chat may be from group: ${groupInfoMessage.content}`,
-        );
-      }
-    } catch (error) {
-      console.error("Error processing group info:", error);
-    }
-
     // Add AI insights
     try {
-      console.log("Generating AI insights for WhatsApp chat...");
+      console.log("[whatsapp] Generating AI insights...");
 
       // Prepare sample messages for AI analysis
       const sampleMessages = userMessages
@@ -395,9 +366,9 @@ export async function parseChatData(rawText: string): Promise<{
       stats.attachmentStyles = aiInsights.attachmentStyles;
       stats.matchPercentage = aiInsights.matchPercentage;
 
-      console.log("AI insights generated successfully for WhatsApp chat");
+      console.log("[whatsapp] AI insights generated successfully");
     } catch (error) {
-      console.error("Error generating AI insights for WhatsApp chat:", error);
+      console.error("[whatsapp] Error generating AI insights:", error);
     }
 
     // Prepare messages for RAG embedding
@@ -409,9 +380,14 @@ export async function parseChatData(rawText: string): Promise<{
         date: m.date || new Date().toISOString(),
       }));
 
+    const participantCount = Object.keys(stats.messagesByUser).length;
+    console.log(
+      `[whatsapp] Parsing complete: ${stats.totalMessages} messages, ${stats.totalWords} words, ${participantCount} participants${skippedCount > 0 ? `, ${skippedCount} skipped` : ""}`,
+    );
+
     return { stats, messages: normalizedMessages };
   } catch (error) {
-    console.error("Error parsing WhatsApp chat data:", error);
+    console.error("[whatsapp] Error parsing chat data:", error);
     return { stats, messages: [] };
   }
 }
@@ -645,8 +621,8 @@ function parseWhatsAppText(text: string): WhatsAppMessage[] {
       if (currentMessage) {
         currentMessage.content += "\n" + line;
       }
-    } catch (error) {
-      console.error(`Error parsing line ${i}: ${line}`, error);
+    } catch {
+      // Skip unparseable lines silently
       // Continue processing other messages
       continue;
     }
@@ -726,8 +702,8 @@ function processEmojis(content: string, user: string, stats: ChatStats): void {
           (stats.emojiStats.byUser[user][emoji] || 0) + 1;
       });
     }
-  } catch (error) {
-    console.error("Error processing emojis:", error);
+  } catch {
+    // Skip emoji processing errors silently
   }
 }
 
@@ -736,8 +712,6 @@ function calculateResponsesAndGaps(
   messages: WhatsAppMessage[],
   stats: ChatStats,
 ): void {
-  console.log(`Calculating response times for ${messages.length} messages`);
-
   const userResponseTimes: Record<string, number[]> = {};
   const userGapTimes: Record<
     string,
@@ -773,7 +747,6 @@ function calculateResponsesAndGaps(
       const date = new Date(msg.date);
       return !isNaN(date.getTime());
     } catch {
-      console.error("Invalid date found:", msg.date);
       return false;
     }
   });
@@ -784,8 +757,6 @@ function calculateResponsesAndGaps(
     const dateB = new Date(b.date!);
     return dateA.getTime() - dateB.getTime();
   });
-
-  console.log(`Sorted ${sortedMessages.length} valid messages chronologically`);
 
   // Process messages to calculate response times
   for (let i = 1; i < sortedMessages.length; i++) {
@@ -805,16 +776,6 @@ function calculateResponsesAndGaps(
     const prevDate = new Date(prevMsg.date!);
     const currDate = new Date(currMsg.date!);
     const diffInMs = currDate.getTime() - prevDate.getTime();
-
-    // Log for debugging negative times
-    if (diffInMs < 0) {
-      console.warn("Negative time gap detected despite sorting:", {
-        prev: prevMsg.date,
-        curr: currMsg.date,
-        diffMs: diffInMs,
-        diffMin: diffInMs / (1000 * 60),
-      });
-    }
 
     // Ensure we're always getting a positive value
     const diffInMin = Math.max(0, diffInMs) / (1000 * 60);
@@ -874,12 +835,8 @@ function calculateResponsesAndGaps(
   Object.keys(userResponseTimes).forEach((user) => {
     const times = userResponseTimes[user];
     if (times.length > 0) {
-      // Calculate average - log for debugging
       const sum = times.reduce((sum, time) => sum + time, 0);
       const avg = sum / times.length;
-      console.log(
-        `User ${user} response times: count=${times.length}, sum=${sum}, avg=${avg}`,
-      );
 
       stats.responseTimes[user].average = avg;
 

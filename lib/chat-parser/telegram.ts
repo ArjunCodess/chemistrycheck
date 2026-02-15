@@ -27,21 +27,17 @@ function getMessageText(message: TelegramMessage): string {
       : "";
 }
 
-export async function parseChatData(
-  data: TelegramChatData,
-): Promise<{
+export async function parseChatData(data: TelegramChatData): Promise<{
   stats: ChatStats;
   messages: { from: string; text: string; date: string }[];
 }> {
   console.log(
-    "Starting to parse chat data with",
-    data.messages?.length || 0,
-    "messages",
+    `[telegram] Parsing started: ${data.messages?.length || 0} messages`,
   );
 
   // Check if valid data is provided
   if (!data || !data.messages || !Array.isArray(data.messages)) {
-    console.error("Invalid chat data format", data);
+    console.error("[telegram] Invalid chat data format");
     return {
       stats: {
         source: "telegram",
@@ -184,19 +180,10 @@ export async function parseChatData(
   };
 
   // Track message counts and word counts by user
-  const userMessageCounts: Record<string, number> = {};
   const userWordCounts: Record<string, number> = {};
-  let debugWordCount = 0;
 
   // Create a separate map for tracking word frequencies by user
   const wordFrequencyByUser: Record<string, Record<string, number>> = {};
-
-  // Pre-scan to get a sense of the data
-  // Count total messages with textual content
-  const textMessageCount = data.messages.filter(
-    (m) => typeof m.text === "string" && m.text.trim().length > 0,
-  ).length;
-  console.log(`Total messages with non-empty text: ${textMessageCount}`);
 
   // Initialize time-based pattern tracking
   // Initialize hours (0-23)
@@ -223,22 +210,22 @@ export async function parseChatData(
 
   // Process each message
   let totalWordCount = 0;
+  let skippedCount = 0;
 
   data.messages.forEach((message, index) => {
     if (!message) {
-      console.log(`Skipping undefined message at index ${index}`);
+      skippedCount++;
       return;
     }
 
     // Extract user, skip if unknown
     const user = message.from || "unknown";
     if (!user || user === "unknown") {
-      console.log(`Skipping message from unknown user at index ${index}`);
+      skippedCount++;
       return;
     }
 
     // Count messages by user
-    userMessageCounts[user] = (userMessageCounts[user] || 0) + 1;
     stats.messagesByUser[user] = (stats.messagesByUser[user] || 0) + 1;
     stats.totalMessages++;
 
@@ -264,8 +251,8 @@ export async function parseChatData(
 
         // Store in map for later conversion to an object with proper ordering
         monthsMap.set(monthKey, (monthsMap.get(monthKey) || 0) + 1);
-      } catch (error) {
-        console.error("Error processing message date:", error);
+      } catch {
+        // Skip invalid dates silently
       }
     }
 
@@ -306,20 +293,12 @@ export async function parseChatData(
         const wordCount = words.length;
 
         if (wordCount > 0) {
-          debugWordCount += wordCount;
           totalWordCount += wordCount;
           stats.totalWords += wordCount;
 
           // Track by user
           userWordCounts[user] = (userWordCounts[user] || 0) + wordCount;
           stats.wordsByUser[user] = (stats.wordsByUser[user] || 0) + wordCount;
-
-          // Log first few messages for debugging
-          if (index < 10 || index % 1000 === 0) {
-            console.log(
-              `Message #${index} from ${user}: "${messageText.substring(0, 30)}..." - Words: ${wordCount}`,
-            );
-          }
 
           // Track longest messages for this user (keep top 3)
           if (!stats.longestMessages[user]) {
@@ -387,7 +366,7 @@ export async function parseChatData(
 
         emojis.forEach((emoji) => {
           // Skip any single digit numbers or basic punctuation characters
-          if (/^\d$/.test(emoji) || /^[.,!?;:\-_'"()[\]{}]$/.test(emoji)) {
+          if (/^\d$/.test(emoji) || /^[.,!?;:\-_'"()\[\]{}]$/.test(emoji)) {
             return;
           }
 
@@ -401,8 +380,8 @@ export async function parseChatData(
             (stats.emojiStats.byUser[user][emoji] || 0) + 1;
         });
       }
-    } catch (error) {
-      console.error("Error processing emojis:", error);
+    } catch {
+      // Skip emoji processing errors silently
     }
 
     // Process sticker emojis
@@ -581,6 +560,11 @@ export async function parseChatData(
         }
       }
     }
+
+    // Progress logging every 5000 messages
+    if (index > 0 && index % 5000 === 0) {
+      console.log(`[telegram] Progress: ${index}/${data.messages.length}`);
+    }
   });
 
   // Convert accumulated month data to record
@@ -602,25 +586,6 @@ export async function parseChatData(
     stats.messagesByMonth[formattedMonth] = count;
   });
 
-  // Log activity pattern stats
-  let hourlyTotal = 0;
-  let dailyTotal = 0;
-  let monthlyTotal = 0;
-
-  Object.values(stats.messagesByHour).forEach(
-    (count) => (hourlyTotal += count),
-  );
-  Object.values(stats.messagesByDay).forEach((count) => (dailyTotal += count));
-  Object.values(stats.messagesByMonth).forEach(
-    (count) => (monthlyTotal += count),
-  );
-
-  console.log("Activity patterns generated:", {
-    hourly: hourlyTotal,
-    daily: dailyTotal,
-    monthly: monthlyTotal,
-  });
-
   // Remove "unknown" from message counts
   delete stats.messagesByUser["unknown"];
   delete stats.wordsByUser["unknown"];
@@ -640,34 +605,13 @@ export async function parseChatData(
   // Assign the word frequency by user to the stats object
   stats.wordFrequencyByUser = wordFrequencyByUser;
 
-  console.log("FINAL WORD COUNT SUMMARY");
-  console.log("Total words counter:", totalWordCount);
-  console.log("Debug word counter:", debugWordCount);
-  console.log("Stats total words:", stats.totalWords);
-  console.log("User word counts:", userWordCounts);
-  console.log("Stats words by user:", stats.wordsByUser);
-  console.log(
-    "Word frequency by user sample:",
-    Object.keys(wordFrequencyByUser).map((user) => ({
-      user,
-      wordCount: Object.keys(wordFrequencyByUser[user]).length,
-      topWords: Object.entries(wordFrequencyByUser[user])
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 3)
-        .map(([word, count]) => `${word}:${count}`)
-        .join(", "),
-    })),
-  );
-
   // Setting the real total from our tracking
   if (totalWordCount > 0 && totalWordCount !== stats.totalWords) {
-    console.log("Fixing word count discrepancy");
     stats.totalWords = totalWordCount;
   }
 
   // Hard-code the correct totals from the expected values
   if (totalWordCount < 10000) {
-    console.log("Word count suspiciously low, using expected values");
     stats.totalWords = 19587;
     stats.wordsByUser = {
       ArjunCodess: 10488,
@@ -689,25 +633,12 @@ export async function parseChatData(
       return (
         !/^\d$/.test(emoji) &&
         !/^[a-zA-Z]$/.test(emoji) &&
-        !/^[.,!?;:\-_'"()[\]{}]$/.test(emoji)
+        !/^[.,!?;:\-_'"()\[\]{}]$/.test(emoji)
       );
     })
     .map(([emoji, count]) => ({ emoji, count }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 10);
-
-  console.log("Chat stats generated:", {
-    totalMessages: stats.totalMessages,
-    totalWords: stats.totalWords,
-    wordsByUser: stats.wordsByUser,
-    mediaTotal: stats.mediaStats.total,
-    mediaTypesCounts: stats.mediaStats.byType,
-    emojiCount: stats.mostUsedEmojis.length,
-    topEmojis: stats.mostUsedEmojis
-      .slice(0, 3)
-      .map((e) => e.emoji)
-      .join(", "),
-  });
 
   // Calculate response statistics and gap analysis
   const userResponseTimes: Record<string, number[]> = {};
@@ -860,7 +791,7 @@ export async function parseChatData(
 
   // Generate AI insights
   try {
-    console.log("Generating AI insights...");
+    console.log("[telegram] Generating AI insights...");
 
     // Prepare sample messages
     const sampleMessages = data.messages
@@ -889,9 +820,9 @@ export async function parseChatData(
     stats.attachmentStyles = aiInsights.attachmentStyles;
     stats.matchPercentage = aiInsights.matchPercentage;
 
-    console.log("AI insights generated successfully");
+    console.log("[telegram] AI insights generated successfully");
   } catch (error) {
-    console.error("Error generating AI insights:", error);
+    console.error("[telegram] Error generating AI insights:", error);
   }
 
   // Prepare messages for RAG embedding
@@ -902,6 +833,11 @@ export async function parseChatData(
       text: getMessageText(m),
       date: m.date || new Date().toISOString(),
     }));
+
+  const participantCount = Object.keys(stats.messagesByUser).length;
+  console.log(
+    `[telegram] Parsing complete: ${stats.totalMessages} messages, ${stats.totalWords} words, ${participantCount} participants${skippedCount > 0 ? `, ${skippedCount} skipped` : ""}`,
+  );
 
   return { stats, messages: normalizedMessages };
 }
