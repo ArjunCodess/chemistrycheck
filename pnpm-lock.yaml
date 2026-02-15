@@ -13,10 +13,10 @@ importers:
   .:
     dependencies:
       '@ai-sdk/google':
-        specifier: ^3.0.15
+        specifier: ^3.0.29
         version: 3.0.29(zod@4.3.6)
       '@ai-sdk/react':
-        specifier: ^3.0.57
+        specifier: ^3.0.88
         version: 3.0.88(react@19.2.3)(zod@4.3.6)
       '@neondatabase/serverless':
         specifier: ^1.0.2
@@ -76,10 +76,10 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1
       ai:
-        specifier: ^6.0.55
+        specifier: ^6.0.86
         version: 6.0.86(zod@4.3.6)
       better-auth:
-        specifier: ^1.4.17
+        specifier: ^1.4.18
         version: 1.4.18(drizzle-kit@0.30.6)(drizzle-orm@0.41.0(@neondatabase/serverless@1.0.2)(@opentelemetry/api@1.9.0)(@types/pg@8.16.0)(gel@2.2.0)(kysely@0.28.11))(next@16.1.5(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       class-variance-authority:
         specifier: ^0.7.1
@@ -100,7 +100,7 @@ importers:
         specifier: ^1.11.13
         version: 1.11.13
       inngest:
-        specifier: ^3.49.3
+        specifier: ^3.52.0
         version: 3.52.0(@opentelemetry/core@2.5.1(@opentelemetry/api@1.9.0))(next@16.1.5(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.3)(zod@4.3.6)
       lucide-react:
         specifier: ^0.483.0
@@ -130,7 +130,7 @@ importers:
         specifier: ^2.15.4
         version: 2.15.4(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       satori:
-        specifier: ^0.19.1
+        specifier: ^0.19.2
         version: 0.19.2
       satori-html:
         specifier: ^0.3.2
@@ -161,7 +161,7 @@ importers:
         specifier: ^0.5.19
         version: 0.5.19(tailwindcss@4.1.18)
       '@types/node':
-        specifier: ^20.19.30
+        specifier: ^20.19.33
         version: 20.19.33
       '@types/react':
         specifier: 19.2.9
