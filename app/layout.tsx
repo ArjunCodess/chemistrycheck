@@ -3,14 +3,16 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import Header from "@/components/shared/header";
-import { config } from "dotenv";
 import { Analytics } from "@vercel/analytics/react";
 import Script from "next/script";
 import { ChatSidebarProvider } from "@/components/providers/chat-sidebar-provider";
 
-config({ path: ".env" });
-
 const geist = Geist({ subsets: ["latin"] });
+const appUrl =
+  process.env.APP_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL &&
+    `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`) ||
+  "http://localhost:3000";
 
 export const metadata: Metadata = {
   title: "ChemistryCheck - Chat Analysis & Insights",
@@ -29,7 +31,7 @@ export const metadata: Metadata = {
   referrer: "origin-when-cross-origin",
   creator: "Arjun Vijay Prakash",
   publisher: "Arjun Vijay Prakash",
-  metadataBase: new URL(process.env.APP_URL!),
+  metadataBase: new URL(appUrl),
   openGraph: {
     title: "ChemistryCheck - Chat Analysis & Insights",
     description: "AI-powered chat analysis tool for messaging platforms",
