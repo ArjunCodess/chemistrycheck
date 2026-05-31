@@ -18,6 +18,7 @@ export const processAnalysis = inngest.createFunction(
   {
     id: "process-analysis",
     retries: 3,
+    triggers: [{ event: "analysis.created" }],
     onFailure: async ({ event, error }) => {
       // This runs after all retries are exhausted
       const { analysisId, blobUrl } = event.data.event.data;
@@ -44,7 +45,6 @@ export const processAnalysis = inngest.createFunction(
       }
     },
   },
-  { event: "analysis.created" },
   async ({ event, step }) => {
     const { analysisId, blobUrl, platform } = event.data;
     console.log(`[inngest] Starting analysis ${analysisId} for ${platform}`);

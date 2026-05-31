@@ -107,7 +107,7 @@ export default function PieChart({ data }: PieChartProps) {
               nameKey="name"
               label={({ name, percent, ...props }) => {
                 const shouldShowLabel = true;
-                const labelText = `${name} (${(percent * 100).toFixed(0)}%)`;
+                const labelText = `${name ?? ""} (${((percent ?? 0) * 100).toFixed(0)}%)`;
                 
                 return shouldShowLabel ? (
                   <text
